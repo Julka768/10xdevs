@@ -95,7 +95,7 @@ Six months in, the team hit two compounding problems. First, a minor dependency 
 
 ## Getting Started
 
-1. Confirm the pinned versions in `package.json`: `astro` (6.x) and `@astrojs/cloudflare` (v14.0.1 per current research) — do not bump either without checking the adapter changelog first.
+1. Confirm the pinned versions in `package.json`: `astro` (^6.3.1) and `@astrojs/cloudflare` (^13.5.0, as actually installed) — do not bump either without checking the adapter changelog first.
 2. Authenticate Wrangler: `npx wrangler login` (or set `CLOUDFLARE_API_TOKEN` for CI).
 3. Push secrets to the Worker: `npx wrangler secret put SUPABASE_URL` and `npx wrangler secret put SUPABASE_KEY` (matching the `env.schema` entries in `astro.config.mjs`).
 4. Validate locally under the actual Workers runtime — not just `npm run dev` — with `npx wrangler dev` before the first deploy, to catch `nodejs_compat` gaps early.
