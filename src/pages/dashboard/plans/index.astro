@@ -1,0 +1,60 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ServerError } from "@/components/auth/ServerError";
+import { DeleteConfirmButton } from "@/components/plans/DeleteConfirmButton";
+
+const error = Astro.url.searchParams.get("error");
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: plans } = supabase
+  ? await supabase.from("training_plans").select("id, name").order("created_at", { ascending: false })
+  : { data: null };
+---
+
+<Layout title="Training plans">
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <div class="flex items-center justify-between">
+        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Training plans
+        </h1>
+        <a href="/dashboard" class="text-sm text-blue-100/70 hover:underline">Back to dashboard</a>
+      </div>
+
+      <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <form method="POST" action="/api/plans" class="flex items-end gap-3">
+          <div class="flex-1 space-y-1.5">
+            <Label htmlFor="name">Plan name</Label>
+            <Input id="name" name="name" placeholder="e.g. Push Pull Legs" required />
+          </div>
+          <Button type="submit">Create</Button>
+        </form>
+      </div>
+
+      {
+        plans && plans.length > 0 ? (
+          <div class="space-y-3">
+            {plans.map((plan) => (
+              <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl">
+                <a href={`/dashboard/plans/${plan.id}`} class="font-medium hover:underline">
+                  {plan.name}
+                </a>
+                <DeleteConfirmButton client:load action={`/api/plans/${plan.id}/delete`} itemLabel={plan.name} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p class="text-center text-blue-100/70">
+            You don't have any training plans yet. Create your first one above.
+          </p>
+        )
+      }
+    </div>
+  </div>
+</Layout>

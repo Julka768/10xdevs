@@ -37,6 +37,15 @@ const baseConfig = tseslint.config({
   },
 });
 
+const generatedTypesConfig = tseslint.config({
+  files: ["src/lib/database.types.ts"],
+  rules: {
+    // Supabase's `supabase gen types` boilerplate always emits this pattern for schemas
+    // with no enums/composite types; hand-editing generated output isn't worth it.
+    "@typescript-eslint/no-redundant-type-constituents": "off",
+  },
+});
+
 const reactConfig = tseslint.config({
   files: ["**/*.{js,jsx,ts,tsx}"],
   extends: [pluginReact.configs.flat.recommended],
@@ -65,12 +74,17 @@ const astroConfig = tseslint.config({
     "astro/no-set-html-directive": "error",
     "astro/no-unused-css-selector": "warn",
     "astro/prefer-class-list-directive": "warn",
+    // astro-eslint-parser doesn't give top-level `return <value>` in frontmatter a parent
+    // function node, which crashes this rule's checkReturnStatement (nullThrows) — not a
+    // real violation. Astro.redirect() guards require exactly this pattern.
+    "@typescript-eslint/no-misused-promises": "off",
   },
 });
 
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
+  generatedTypesConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
