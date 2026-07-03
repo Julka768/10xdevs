@@ -275,22 +275,22 @@ New table, no existing data to migrate.
 
 #### Manual
 
-- [x] 2.3 Future-dated `logged_at` is rejected with an error, no row inserted
-- [x] 2.4 Valid submission creates a row visible only to the logging user
-- [x] 2.5 Editing updates only weight/reps/sets/date
-- [x] 2.6 Deleting removes the entry and redirects back to the plan page
+- [x] 2.3 Future-dated `logged_at` is rejected with an error, no row inserted — 4592c8a
+- [x] 2.4 Valid submission creates a row visible only to the logging user — 4592c8a
+- [x] 2.5 Editing updates only weight/reps/sets/date — 4592c8a
+- [x] 2.6 Deleting removes the entry and redirects back to the plan page — 4592c8a
 
 ### Phase 3: UI — inline logging and date-grouped history
 
 #### Automated
 
-- [x] 3.1 Type check passes
-- [x] 3.2 Linting passes
+- [x] 3.1 Type check passes — 4592c8a
+- [x] 3.2 Linting passes — 4592c8a
 
 #### Manual
 
-- [x] 3.3 Logging via the inline form shows the new entry grouped under today's date
-- [x] 3.4 History entries are grouped and ordered by date, most recent first
-- [x] 3.5 Inline edit and delete work without navigating away
-- [x] 3.6 A log entry survives its source exercise being deleted, showing the snapshotted name
-- [x] 3.7 A second user sees no entries from the first user's plans
+- [x] 3.3 Logging via the inline form shows the new entry grouped under today's date — 4592c8a
+- [x] 3.4 History entries are grouped and ordered by date, most recent first — 4592c8a
+- [x] 3.5 Inline edit and delete work without navigating away — 4592c8a
+- [x] 3.6 A log entry survives its source exercise being deleted, showing the snapshotted name — 4592c8a
+- [x] 3.7 A second user sees no entries from the first user's plans — 4592c8a

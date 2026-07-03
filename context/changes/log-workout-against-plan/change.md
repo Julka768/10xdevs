@@ -1,7 +1,7 @@
 ---
 change_id: log-workout-against-plan
 title: Log a workout session (exercise, weight, reps) against a training plan
-status: implementing
+status: implemented
 created: 2026-07-03
 updated: 2026-07-03
 archived_at: null
