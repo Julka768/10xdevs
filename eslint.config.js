@@ -37,6 +37,15 @@ const baseConfig = tseslint.config({
   },
 });
 
+const generatedTypesConfig = tseslint.config({
+  files: ["src/lib/database.types.ts"],
+  rules: {
+    // Supabase's `supabase gen types` boilerplate always emits this pattern for schemas
+    // with no enums/composite types; hand-editing generated output isn't worth it.
+    "@typescript-eslint/no-redundant-type-constituents": "off",
+  },
+});
+
 const reactConfig = tseslint.config({
   files: ["**/*.{js,jsx,ts,tsx}"],
   extends: [pluginReact.configs.flat.recommended],
@@ -71,6 +80,7 @@ const astroConfig = tseslint.config({
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
+  generatedTypesConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
