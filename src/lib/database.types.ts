@@ -82,6 +82,60 @@ export interface Database {
         };
         Relationships: [];
       };
+      workout_logs: {
+        Row: {
+          created_at: string;
+          exercise_id: string | null;
+          exercise_name: string;
+          id: string;
+          logged_at: string;
+          plan_id: string;
+          reps: number;
+          sets_completed: number;
+          user_id: string;
+          weight: number;
+        };
+        Insert: {
+          created_at?: string;
+          exercise_id?: string | null;
+          exercise_name: string;
+          id?: string;
+          logged_at?: string;
+          plan_id: string;
+          reps: number;
+          sets_completed: number;
+          user_id: string;
+          weight: number;
+        };
+        Update: {
+          created_at?: string;
+          exercise_id?: string | null;
+          exercise_name?: string;
+          id?: string;
+          logged_at?: string;
+          plan_id?: string;
+          reps?: number;
+          sets_completed?: number;
+          user_id?: string;
+          weight?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "workout_logs_exercise_id_fkey";
+            columns: ["exercise_id"];
+            isOneToOne: false;
+            referencedRelation: "exercises";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "workout_logs_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "training_plans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;

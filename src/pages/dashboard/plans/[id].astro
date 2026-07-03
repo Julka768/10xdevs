@@ -13,6 +13,9 @@ if (typeof id !== "string") {
 }
 const error = Astro.url.searchParams.get("error");
 const editingId = Astro.url.searchParams.get("edit");
+const loggingExerciseId = Astro.url.searchParams.get("log");
+const editingLogId = Astro.url.searchParams.get("editLog");
+const today = new Date().toISOString().slice(0, 10);
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const { data: plan } = supabase
@@ -30,6 +33,22 @@ const { data: exercises } = supabase
       .eq("plan_id", id)
       .order("position", { ascending: true })
   : { data: null };
+
+const { data: logs } = supabase
+  ? await supabase
+      .from("workout_logs")
+      .select("id, exercise_id, exercise_name, weight, reps, sets_completed, logged_at")
+      .eq("plan_id", id)
+      .order("logged_at", { ascending: false })
+      .order("created_at", { ascending: false })
+  : { data: null };
+
+const logsByDate = new Map<string, NonNullable<typeof logs>>();
+for (const log of logs ?? []) {
+  const entries = logsByDate.get(log.logged_at) ?? [];
+  entries.push(log);
+  logsByDate.set(log.logged_at, entries);
+}
 ---
 
 <Layout title={plan.name}>
@@ -108,6 +127,12 @@ const { data: exercises } = supabase
                     </div>
                     <div class="flex items-center gap-3">
                       <a
+                        href={`/dashboard/plans/${plan.id}?log=${exercise.id}`}
+                        class="text-sm text-blue-100/70 hover:underline"
+                      >
+                        Log
+                      </a>
+                      <a
                         href={`/dashboard/plans/${plan.id}?edit=${exercise.id}`}
                         class="text-sm text-blue-100/70 hover:underline"
                       >
@@ -122,6 +147,44 @@ const { data: exercises } = supabase
                   </div>
                 ),
               )}
+              {exercises
+                .filter((exercise) => exercise.id === loggingExerciseId)
+                .map((exercise) => (
+                  <form
+                    method="POST"
+                    action={`/api/plans/${plan.id}/exercises/${exercise.id}/logs`}
+                    class="flex flex-wrap items-end gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+                  >
+                    <div class="w-24 space-y-1.5">
+                      <Label htmlFor={`log-weight-${exercise.id}`}>Weight</Label>
+                      <Input
+                        id={`log-weight-${exercise.id}`}
+                        name="weight"
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        placeholder="kg"
+                        required
+                      />
+                    </div>
+                    <div class="w-24 space-y-1.5">
+                      <Label htmlFor={`log-reps-${exercise.id}`}>Reps</Label>
+                      <Input id={`log-reps-${exercise.id}`} name="reps" type="number" min="1" required />
+                    </div>
+                    <div class="w-24 space-y-1.5">
+                      <Label htmlFor={`log-sets-${exercise.id}`}>Sets</Label>
+                      <Input id={`log-sets-${exercise.id}`} name="sets_completed" type="number" min="1" required />
+                    </div>
+                    <div class="w-40 space-y-1.5">
+                      <Label htmlFor={`log-date-${exercise.id}`}>Date</Label>
+                      <Input id={`log-date-${exercise.id}`} name="logged_at" type="date" value={today} required />
+                    </div>
+                    <Button type="submit">Log</Button>
+                    <a href={`/dashboard/plans/${plan.id}`} class="text-sm text-blue-100/70 hover:underline">
+                      Cancel
+                    </a>
+                  </form>
+                ))}
             </div>
           ) : (
             <p class="mb-4 text-center text-blue-100/70">No exercises yet. Add your first one below.</p>
@@ -147,6 +210,108 @@ const { data: exercises } = supabase
           </div>
           <Button type="submit">Add</Button>
         </form>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Workout Log</h2>
+
+        {
+          logsByDate.size > 0 ? (
+            <div class="space-y-6">
+              {[...logsByDate.entries()].map(([date, entries]) => (
+                <div>
+                  <h3 class="mb-2 text-sm font-semibold text-blue-100/70">{date}</h3>
+                  <div class="space-y-3">
+                    {entries.map((log) =>
+                      log.id === editingLogId ? (
+                        <form
+                          method="POST"
+                          action={`/api/plans/${plan.id}/logs/${log.id}/update`}
+                          class="flex flex-wrap items-end gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+                        >
+                          <div class="w-24 space-y-1.5">
+                            <Label htmlFor={`edit-weight-${log.id}`}>Weight</Label>
+                            <Input
+                              id={`edit-weight-${log.id}`}
+                              name="weight"
+                              type="number"
+                              step="0.5"
+                              min="0"
+                              value={log.weight}
+                              required
+                            />
+                          </div>
+                          <div class="w-24 space-y-1.5">
+                            <Label htmlFor={`edit-reps-${log.id}`}>Reps</Label>
+                            <Input
+                              id={`edit-reps-${log.id}`}
+                              name="reps"
+                              type="number"
+                              min="1"
+                              value={log.reps}
+                              required
+                            />
+                          </div>
+                          <div class="w-24 space-y-1.5">
+                            <Label htmlFor={`edit-sets-${log.id}`}>Sets</Label>
+                            <Input
+                              id={`edit-sets-${log.id}`}
+                              name="sets_completed"
+                              type="number"
+                              min="1"
+                              value={log.sets_completed}
+                              required
+                            />
+                          </div>
+                          <div class="w-40 space-y-1.5">
+                            <Label htmlFor={`edit-date-${log.id}`}>Date</Label>
+                            <Input
+                              id={`edit-date-${log.id}`}
+                              name="logged_at"
+                              type="date"
+                              value={log.logged_at}
+                              required
+                            />
+                          </div>
+                          <Button type="submit" variant="secondary">
+                            Save
+                          </Button>
+                          <a href={`/dashboard/plans/${plan.id}`} class="text-sm text-blue-100/70 hover:underline">
+                            Cancel
+                          </a>
+                        </form>
+                      ) : (
+                        <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                          <div>
+                            <p class="font-medium">{log.exercise_name}</p>
+                            <p class="text-sm text-blue-100/70">
+                              {log.weight} kg × {log.reps} reps × {log.sets_completed} sets
+                            </p>
+                          </div>
+                          <div class="flex items-center gap-3">
+                            <a
+                              href={`/dashboard/plans/${plan.id}?editLog=${log.id}`}
+                              class="text-sm text-blue-100/70 hover:underline"
+                            >
+                              Edit
+                            </a>
+                            <DeleteConfirmButton
+                              client:load
+                              action={`/api/plans/${plan.id}/logs/${log.id}/delete`}
+                              itemLabel={log.exercise_name}
+                            />
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">No workout history yet. Log an entry above to get started.</p>
+          )
+        }
       </div>
     </div>
   </div>
