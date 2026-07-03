@@ -3,7 +3,7 @@ project: "10xDevBodyMetrics"
 version: 1
 status: draft
 created: 2026-07-02
-updated: 2026-07-02
+updated: 2026-07-03
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -29,8 +29,8 @@ Gym-goers currently track lifting, body measurements, and calories in separate s
 
 | ID   | Change ID                          | Outcome (user can …)                                             | Prerequisites          | PRD refs             | Status   |
 | ---- | ----------------------------------- | ------------------------------------------------------------------ | ----------------------- | --------------------- | -------- |
-| F-01 | training-plan-data-foundation       | (foundation) Supabase schema + RLS pattern for plans/exercises     | —                        | FR-002, FR-003         | ready    |
-| S-01 | create-and-manage-training-plan     | create, view, edit, and delete exercises in a training plan        | F-01                    | FR-002, FR-003         | proposed |
+| F-01 | training-plan-data-foundation       | (foundation) Supabase schema + RLS pattern for plans/exercises     | —                        | FR-002, FR-003         | done     |
+| S-01 | create-and-manage-training-plan     | create, view, edit, and delete exercises in a training plan        | F-01                    | FR-002, FR-003         | ready    |
 | S-02 | log-workout-against-plan            | log a workout session (exercise, weight, reps) against their plan  | S-01                    | US-01, FR-001, FR-005  | proposed |
 | S-03 | set-body-composition-goal           | set and edit a body-composition goal at any time                   | —                        | FR-004                 | ready    |
 | S-04 | log-daily-calories                  | log calories consumed for a given day                              | —                        | FR-006                 | ready    |
@@ -55,7 +55,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Frontend:** partial — Astro 6 + React 19 islands scaffolded (`src/components/`, `src/layouts/Layout.astro`); no domain UI yet beyond auth forms and the empty `/dashboard` shell.
 - **Backend / API:** partial — `src/pages/api/auth/{signin,signout,signup}.ts` establish the API route pattern; no domain API routes yet.
-- **Data:** absent — `supabase/` has only `config.toml` + `.gitignore`; no migrations, no schema for any domain entity.
+- **Data:** partial — F-01 landed `supabase/migrations/20260703121505_create_training_plan_schema.sql` (training_plans/exercises schema + RLS); no other domain tables (workout logs, goals, calories, measurements) yet.
 - **Auth:** present — full email+password flow wired (`src/lib/supabase.ts`, `src/middleware.ts`, `src/pages/api/auth/*.ts`, `src/pages/auth/{signin,signup,confirm-email}.astro`). FR-001 is already satisfied.
 - **Deploy / infra:** present — Wrangler/Workers configured; `.github/workflows/ci.yml` has both `ci` and `deploy` jobs wired, auto-deploy-on-merge to `master`.
 - **Observability:** absent — no error-tracking/logging library; `wrangler tail` is the only log path (infra-level, not app-level).
@@ -73,7 +73,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The table shape and RLS policy chosen here become the template for five more domain tables — getting the policy shape right once here avoids rework across every later slice.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -87,7 +87,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Free-text exercise entry (no shared library) risks typos/duplicate names — PRD accepts this risk explicitly for v1; do not over-build validation here given the `speed` goal.
-- **Status:** proposed
+- **Status:** ready
 
 ### S-02: User logs a workout session against their plan
 
@@ -153,8 +153,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 | Roadmap ID | Change ID                        | GitHub Issue                                                  | Ready for `/10x-plan` | Notes                                   |
 | ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------- | ------------------------------------------ |
-| F-01       | training-plan-data-foundation      | [#8](https://github.com/Julka768/10xdevs/issues/8)   | yes                    | Run `/10x-plan training-plan-data-foundation` |
-| S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | no                     | Waiting on F-01 (#8)                       |
+| F-01       | training-plan-data-foundation      | [#8](https://github.com/Julka768/10xdevs/issues/8)   | done                   | Implemented; issue closed                  |
+| S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | yes                    | F-01 done — run `/10x-plan create-and-manage-training-plan` |
 | S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | no                     | Waiting on S-01 (#9); north star           |
 | S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | yes                    | Run `/10x-plan set-body-composition-goal`  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | yes                    | Run `/10x-plan log-daily-calories`         |
@@ -180,4 +180,6 @@ None — PRD's `## Open Questions` is empty, and no new cross-cutting question s
 - **Target weight per exercise** — Why parked: deferred from S-01 during implementation (2026-07-03) to keep that slice matching its approved plan (`name`/`target_sets`/`target_reps` only, per FR-002/FR-003). Would need a new `exercises.target_weight` column + migration, zod schema update, and form changes in `/dashboard/plans/[id]`. Revisit as a small follow-up slice, or consider folding into S-02 if the intent is logging *actual* weight performed rather than a planned target.
 
 ## Done
+
+- **F-01: (foundation) Supabase schema + RLS pattern for plans/exercises** — Implemented 2026-07-03 in `context/changes/training-plan-data-foundation/` (not yet archived). Lesson: pair RLS with explicit GRANTs (see `context/foundation/lessons.md`).
 
