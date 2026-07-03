@@ -313,13 +313,13 @@ None — no schema changes in this plan.
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes
-- [x] 1.3 `src/lib/database.types.ts` exists and exports a `Database` type with `public.Tables.training_plans` and `public.Tables.exercises`
+- [x] 1.1 `npm run lint` passes — 17081cb
+- [x] 1.2 `npm run build` passes — 17081cb
+- [x] 1.3 `src/lib/database.types.ts` exists and exports a `Database` type with `public.Tables.training_plans` and `public.Tables.exercises` — 17081cb
 
 #### Manual
 
-- [x] 1.4 Existing sign-in/sign-up/sign-out flows and the `/dashboard` shell still work unchanged
+- [x] 1.4 Existing sign-in/sign-up/sign-out flows and the `/dashboard` shell still work unchanged — 17081cb
 
 ### Phase 2: Training plans — create, list, rename, delete
 
