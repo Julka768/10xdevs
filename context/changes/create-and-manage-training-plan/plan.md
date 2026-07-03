@@ -341,13 +341,13 @@ None — no schema changes in this plan.
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes — 5ac6214
+- [x] 3.2 `npm run build` passes — 5ac6214
 
 #### Manual
 
-- [ ] 3.3 Adding an exercise appends it to the end of the list with the correct next `position`
-- [ ] 3.4 Clicking "Edit" reveals an editable row; saving updates values and returns to read-only view
-- [ ] 3.5 Deleting an exercise (via confirm dialog) removes it from the list
-- [ ] 3.6 With zero exercises, the plan detail page shows an empty-state message and an add-exercise CTA
-- [ ] 3.7 A second test account cannot view, edit, or delete the first account's exercises
+- [x] 3.3 Adding an exercise appends it to the end of the list with the correct next `position` — 5ac6214
+- [x] 3.4 Clicking "Edit" reveals an editable row; saving updates values and returns to read-only view — 5ac6214
+- [x] 3.5 Deleting an exercise (via confirm dialog) removes it from the list — 5ac6214
+- [x] 3.6 With zero exercises, the plan detail page shows an empty-state message and an add-exercise CTA — 5ac6214
+- [x] 3.7 A second test account cannot view, edit, or delete the first account's exercises — 5ac6214

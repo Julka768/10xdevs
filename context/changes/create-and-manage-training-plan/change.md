@@ -1,7 +1,7 @@
 ---
 change_id: create-and-manage-training-plan
 title: Create, view, edit, and delete exercises in a training plan
-status: implementing
+status: implemented
 created: 2026-07-03
 updated: 2026-07-03
 archived_at: null
