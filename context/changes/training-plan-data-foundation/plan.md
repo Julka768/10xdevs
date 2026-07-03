@@ -182,13 +182,13 @@ This migration must also be pushed to the remote Supabase project(s) referenced 
 
 #### Automated
 
-- [x] 1.1 Local Supabase stack starts: `supabase start`
-- [x] 1.2 Migration applies cleanly: `supabase db reset`
-- [x] 1.3 Migration list shows new migration applied: `supabase migration list`
+- [x] 1.1 Local Supabase stack starts: `supabase start` — bc697f3
+- [x] 1.2 Migration applies cleanly: `supabase db reset` — bc697f3
+- [x] 1.3 Migration list shows new migration applied: `supabase migration list` — bc697f3
 
 #### Manual
 
-- [x] 1.4 RLS isolation verified with two test users (SELECT/UPDATE/DELETE scoped correctly)
-- [x] 1.5 CHECK constraint rejection verified (zero/negative sets-reps, empty name)
-- [x] 1.6 UNIQUE (plan_id, position) rejection verified
-- [ ] 1.7 Migration pushed to remote Supabase project (`supabase db push` or Dashboard SQL editor) — tables confirmed to exist in the environment the deployed app connects to
+- [x] 1.4 RLS isolation verified with two test users (SELECT/UPDATE/DELETE scoped correctly) — bc697f3
+- [x] 1.5 CHECK constraint rejection verified (zero/negative sets-reps, empty name) — bc697f3
+- [x] 1.6 UNIQUE (plan_id, position) rejection verified — bc697f3
+- [x] 1.7 Migration pushed to remote Supabase project (`supabase db push` or Dashboard SQL editor) — tables confirmed to exist in the environment the deployed app connects to

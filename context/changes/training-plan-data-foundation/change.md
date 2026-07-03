@@ -1,7 +1,7 @@
 ---
 change_id: training-plan-data-foundation
 title: Training-plan data foundation
-status: implementing
+status: implemented
 created: 2026-07-03
 updated: 2026-07-03
 archived_at: null
