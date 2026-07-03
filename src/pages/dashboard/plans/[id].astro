@@ -12,6 +12,7 @@ if (typeof id !== "string") {
   return Astro.redirect("/dashboard/plans");
 }
 const error = Astro.url.searchParams.get("error");
+const editingId = Astro.url.searchParams.get("edit");
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const { data: plan } = supabase
@@ -21,6 +22,14 @@ const { data: plan } = supabase
 if (!plan) {
   return Astro.redirect("/dashboard/plans");
 }
+
+const { data: exercises } = supabase
+  ? await supabase
+      .from("exercises")
+      .select("id, name, target_sets, target_reps, position")
+      .eq("plan_id", id)
+      .order("position", { ascending: true })
+  : { data: null };
 ---
 
 <Layout title={plan.name}>
@@ -45,7 +54,99 @@ if (!plan) {
 
       <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
         <h2 class="mb-4 text-xl font-semibold">Exercises</h2>
-        <p class="text-blue-100/70">Exercise management is coming in the next phase.</p>
+
+        {
+          exercises && exercises.length > 0 ? (
+            <div class="space-y-3">
+              {exercises.map((exercise) =>
+                exercise.id === editingId ? (
+                  <form
+                    method="POST"
+                    action={`/api/plans/${plan.id}/exercises/${exercise.id}/update`}
+                    class="flex flex-wrap items-end gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+                  >
+                    <div class="flex-1 space-y-1.5">
+                      <Label htmlFor={`name-${exercise.id}`}>Name</Label>
+                      <Input id={`name-${exercise.id}`} name="name" value={exercise.name} required />
+                    </div>
+                    <div class="w-24 space-y-1.5">
+                      <Label htmlFor={`sets-${exercise.id}`}>Sets</Label>
+                      <Input
+                        id={`sets-${exercise.id}`}
+                        name="target_sets"
+                        type="number"
+                        min="1"
+                        value={exercise.target_sets}
+                        required
+                      />
+                    </div>
+                    <div class="w-24 space-y-1.5">
+                      <Label htmlFor={`reps-${exercise.id}`}>Reps</Label>
+                      <Input
+                        id={`reps-${exercise.id}`}
+                        name="target_reps"
+                        type="number"
+                        min="1"
+                        value={exercise.target_reps}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" variant="secondary">
+                      Save
+                    </Button>
+                    <a href={`/dashboard/plans/${plan.id}`} class="text-sm text-blue-100/70 hover:underline">
+                      Cancel
+                    </a>
+                  </form>
+                ) : (
+                  <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                    <div>
+                      <p class="font-medium">{exercise.name}</p>
+                      <p class="text-sm text-blue-100/70">
+                        {exercise.target_sets} sets × {exercise.target_reps} reps
+                      </p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <a
+                        href={`/dashboard/plans/${plan.id}?edit=${exercise.id}`}
+                        class="text-sm text-blue-100/70 hover:underline"
+                      >
+                        Edit
+                      </a>
+                      <DeleteConfirmButton
+                        client:load
+                        action={`/api/plans/${plan.id}/exercises/${exercise.id}/delete`}
+                        itemLabel={exercise.name}
+                      />
+                    </div>
+                  </div>
+                ),
+              )}
+            </div>
+          ) : (
+            <p class="mb-4 text-center text-blue-100/70">No exercises yet. Add your first one below.</p>
+          )
+        }
+
+        <form
+          method="POST"
+          action={`/api/plans/${plan.id}/exercises`}
+          class="mt-4 flex flex-wrap items-end gap-3 border-t border-white/10 pt-4"
+        >
+          <div class="flex-1 space-y-1.5">
+            <Label htmlFor="new-name">Exercise name</Label>
+            <Input id="new-name" name="name" placeholder="e.g. Bench press" required />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="new-sets">Sets</Label>
+            <Input id="new-sets" name="target_sets" type="number" min="1" placeholder="3" required />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="new-reps">Reps</Label>
+            <Input id="new-reps" name="target_reps" type="number" min="1" placeholder="10" required />
+          </div>
+          <Button type="submit">Add</Button>
+        </form>
       </div>
     </div>
   </div>
