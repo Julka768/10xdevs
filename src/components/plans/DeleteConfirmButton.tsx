@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +18,8 @@ interface DeleteConfirmButtonProps {
 }
 
 export function DeleteConfirmButton({ action, itemLabel }: DeleteConfirmButtonProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -29,13 +32,15 @@ export function DeleteConfirmButton({ action, itemLabel }: DeleteConfirmButtonPr
           <AlertDialogTitle>Delete {itemLabel}?</AlertDialogTitle>
           <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
         </AlertDialogHeader>
+        {/* AlertDialogAction closes the dialog on click, which can unmount this form before
+            the browser's native type="submit" default action fires. Submitting imperatively
+            in onClick runs synchronously in the same event, ahead of that unmount. */}
+        <form method="POST" action={action} ref={formRef} />
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <form method="POST" action={action}>
-            <AlertDialogAction type="submit" variant="destructive">
-              Delete
-            </AlertDialogAction>
-          </form>
+          <AlertDialogAction type="button" variant="destructive" onClick={() => formRef.current?.requestSubmit()}>
+            Delete
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,0 +1,52 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ServerError } from "@/components/auth/ServerError";
+import { DeleteConfirmButton } from "@/components/plans/DeleteConfirmButton";
+
+const { id } = Astro.params;
+if (typeof id !== "string") {
+  return Astro.redirect("/dashboard/plans");
+}
+const error = Astro.url.searchParams.get("error");
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: plan } = supabase
+  ? await supabase.from("training_plans").select("id, name").eq("id", id).maybeSingle()
+  : { data: null };
+
+if (!plan) {
+  return Astro.redirect("/dashboard/plans");
+}
+---
+
+<Layout title={plan.name}>
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <a href="/dashboard/plans" class="text-sm text-blue-100/70 hover:underline">← All plans</a>
+
+      <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <div class="flex items-end justify-between gap-4">
+          <form method="POST" action={`/api/plans/${plan.id}/rename`} class="flex flex-1 items-end gap-3">
+            <div class="flex-1 space-y-1.5">
+              <Label htmlFor="name">Plan name</Label>
+              <Input id="name" name="name" value={plan.name} required />
+            </div>
+            <Button type="submit" variant="secondary">Rename</Button>
+          </form>
+          <DeleteConfirmButton client:load action={`/api/plans/${plan.id}/delete`} itemLabel={plan.name} />
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Exercises</h2>
+        <p class="text-blue-100/70">Exercise management is coming in the next phase.</p>
+      </div>
+    </div>
+  </div>
+</Layout>
