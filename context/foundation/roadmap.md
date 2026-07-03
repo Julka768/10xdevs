@@ -177,6 +177,7 @@ None — PRD's `## Open Questions` is empty, and no new cross-cutting question s
 - **Integrations with wearables/third-party APIs** — Why parked: PRD Non-Goals.
 - **Native mobile app** — Why parked: PRD Non-Goals — web only for v1.
 - **Live human-trainer visibility/management feature** — Why parked: PRD Non-Goals.
+- **Target weight per exercise** — Why parked: deferred from S-01 during implementation (2026-07-03) to keep that slice matching its approved plan (`name`/`target_sets`/`target_reps` only, per FR-002/FR-003). Would need a new `exercises.target_weight` column + migration, zod schema update, and form changes in `/dashboard/plans/[id]`. Revisit as a small follow-up slice, or consider folding into S-02 if the intent is logging *actual* weight performed rather than a planned target.
 
 ## Done
 
