@@ -325,17 +325,17 @@ None — no schema changes in this plan.
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes — 35b32b5
+- [x] 2.2 `npm run build` passes — 35b32b5
 
 #### Manual
 
-- [x] 2.3 Creating a plan via the form redirects to its detail page and the plan is visible there
-- [x] 2.4 The new plan appears in the `/dashboard/plans` list
-- [x] 2.5 Renaming a plan persists after a page reload
-- [x] 2.6 Deleting a plan (via the confirm dialog) redirects to the list and the plan no longer appears
-- [x] 2.7 A second test account cannot see the first account's plans in its list, and navigating directly to the first account's plan-detail URL redirects to `/dashboard/plans`
-- [x] 2.8 With zero plans, the list page shows an empty-state message and a create CTA
+- [x] 2.3 Creating a plan via the form redirects to its detail page and the plan is visible there — 35b32b5
+- [x] 2.4 The new plan appears in the `/dashboard/plans` list — 35b32b5
+- [x] 2.5 Renaming a plan persists after a page reload — 35b32b5
+- [x] 2.6 Deleting a plan (via the confirm dialog) redirects to the list and the plan no longer appears — 35b32b5
+- [x] 2.7 A second test account cannot see the first account's plans in its list, and navigating directly to the first account's plan-detail URL redirects to `/dashboard/plans` — 35b32b5
+- [x] 2.8 With zero plans, the list page shows an empty-state message and a create CTA — 35b32b5
 
 ### Phase 3: Exercises — create, view, edit, delete within a plan
 
