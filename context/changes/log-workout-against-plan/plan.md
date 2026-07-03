@@ -256,22 +256,22 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase
-- [x] 1.2 Type check passes
-- [x] 1.3 Linting passes
+- [x] 1.1 Migration applies cleanly against local Supabase — bd356e7
+- [x] 1.2 Type check passes — bd356e7
+- [x] 1.3 Linting passes — bd356e7
 
 #### Manual
 
-- [x] 1.4 Cross-user insert into `workout_logs` is blocked by RLS
-- [x] 1.5 Insert with `exercise_id = null` succeeds when `plan_id` is owned by the user
-- [x] 1.6 Deleting a referenced exercise leaves the log row intact with `exercise_id = null`
+- [x] 1.4 Cross-user insert into `workout_logs` is blocked by RLS — bd356e7
+- [x] 1.5 Insert with `exercise_id = null` succeeds when `plan_id` is owned by the user — bd356e7
+- [x] 1.6 Deleting a referenced exercise leaves the log row intact with `exercise_id = null` — bd356e7
 
 ### Phase 2: API routes — create, update, delete log entries
 
 #### Automated
 
-- [ ] 2.1 Type check passes
-- [ ] 2.2 Linting passes
+- [x] 2.1 Type check passes
+- [x] 2.2 Linting passes
 
 #### Manual
 
