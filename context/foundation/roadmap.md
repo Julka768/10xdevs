@@ -151,15 +151,17 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                        | Suggested issue title                                    | Ready for `/10x-plan` | Notes                                   |
-| ---------- | ---------------------------------- | ------------------------------------------------------------ | ---------------------- | ------------------------------------------ |
-| F-01       | training-plan-data-foundation      | Data foundation: training plan + exercise schema with RLS   | yes                    | Run `/10x-plan training-plan-data-foundation` |
-| S-01       | create-and-manage-training-plan    | User can create and manage a training plan                  | no                     | Waiting on F-01                            |
-| S-02       | log-workout-against-plan           | User can log a workout against their plan (north star)      | no                     | Waiting on S-01                            |
-| S-03       | set-body-composition-goal          | User can set and edit a body-composition goal               | yes                    | Run `/10x-plan set-body-composition-goal`  |
-| S-04       | log-daily-calories                 | User can log daily calories                                 | yes                    | Run `/10x-plan log-daily-calories`         |
-| S-05       | log-weekly-measurements            | User can log weekly body measurements                       | yes                    | Run `/10x-plan log-weekly-measurements`    |
-| S-06       | weekly-progress-report             | User can view the weekly progress report                    | no                     | Waiting on S-02, S-03, S-04, S-05          |
+| Roadmap ID | Change ID                        | GitHub Issue                                                  | Ready for `/10x-plan` | Notes                                   |
+| ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------- | ------------------------------------------ |
+| F-01       | training-plan-data-foundation      | [#8](https://github.com/Julka768/10xdevs/issues/8)   | yes                    | Run `/10x-plan training-plan-data-foundation` |
+| S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | no                     | Waiting on F-01 (#8)                       |
+| S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | no                     | Waiting on S-01 (#9); north star           |
+| S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | yes                    | Run `/10x-plan set-body-composition-goal`  |
+| S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | yes                    | Run `/10x-plan log-daily-calories`         |
+| S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | yes                    | Run `/10x-plan log-weekly-measurements`    |
+| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | no                     | Waiting on S-02/S-03/S-04/S-05 (#10-13)    |
+
+Migrated to GitHub Issues on `Julka768/10xdevs`, milestone [`MVP roadmap`](https://github.com/Julka768/10xdevs/milestone/1), on 2026-07-02.
 
 ## Open Roadmap Questions
 
