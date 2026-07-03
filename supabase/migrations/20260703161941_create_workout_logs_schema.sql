@@ -15,6 +15,10 @@ create index workout_logs_user_id_idx on public.workout_logs(user_id);
 create index workout_logs_plan_id_idx on public.workout_logs(plan_id);
 create index workout_logs_logged_at_idx on public.workout_logs(plan_id, logged_at desc);
 
+-- plan_id/exercise_id/exercise_name/user_id are immutable after creation by
+-- design: the update grant is column-scoped so no UPDATE (app or direct
+-- PostgREST) can touch them, regardless of RLS. Broadening this grant to
+-- cover those columns would reopen that invariant.
 grant select, insert, delete on public.workout_logs to authenticated;
 grant update (weight, reps, sets_completed, logged_at) on public.workout_logs to authenticated;
 
