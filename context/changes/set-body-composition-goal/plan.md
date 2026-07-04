@@ -186,23 +186,23 @@ Not applicable — new table, no existing data to migrate.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase
-- [x] 1.2 Type checking passes
-- [x] 1.3 Linting passes
+- [x] 1.1 Migration applies cleanly against local Supabase — f1e8ce8
+- [x] 1.2 Type checking passes — f1e8ce8
+- [x] 1.3 Linting passes — f1e8ce8
 
 #### Manual
 
-- [x] 1.4 Cross-user select is blocked by RLS
-- [x] 1.5 Insert with another user's user_id is rejected by the insert policy
-- [x] 1.6 A user can insert multiple rows without a uniqueness conflict
-- [x] 1.7 Update/delete against the table is denied (no policy exists)
+- [x] 1.4 Cross-user select is blocked by RLS — f1e8ce8
+- [x] 1.5 Insert with another user's user_id is rejected by the insert policy — f1e8ce8
+- [x] 1.6 A user can insert multiple rows without a uniqueness conflict — f1e8ce8
+- [x] 1.7 Update/delete against the table is denied (no policy exists) — f1e8ce8
 
 ### Phase 2: API route — create a goal entry
 
 #### Automated
 
-- [ ] 2.1 Type checking passes
-- [ ] 2.2 Linting passes
+- [x] 2.1 Type checking passes
+- [x] 2.2 Linting passes
 
 #### Manual
 
