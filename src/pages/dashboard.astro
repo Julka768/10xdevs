@@ -1,7 +1,24 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
 
 const { user } = Astro.locals;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: goal } = supabase
+  ? await supabase
+      .from("body_composition_goals")
+      .select("goal_type")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+  : { data: null };
+
+const goalLabels: Record<string, string> = {
+  lose: "Lose weight",
+  gain: "Gain weight",
+  maintain: "Maintain weight",
+};
 ---
 
 <Layout title="Dashboard">
@@ -14,12 +31,23 @@ const { user } = Astro.locals;
         Welcome, <span class="font-semibold text-white">{user?.email}</span>
       </p>
       <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-      <a
-        href="/dashboard/plans"
-        class="mt-6 inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
-      >
-        Training plans
-      </a>
+      <p class="mt-4 text-sm text-blue-100/80">
+        Goal: <span class="font-semibold">{goal ? (goalLabels[goal.goal_type] ?? goal.goal_type) : "Not set yet"}</span>
+      </p>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="/dashboard/plans"
+          class="inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+        >
+          Training plans
+        </a>
+        <a
+          href="/dashboard/goal"
+          class="inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+        >
+          Body-composition goal
+        </a>
+      </div>
       <form method="POST" action="/api/auth/signout" class="mt-6">
         <button
           type="submit"

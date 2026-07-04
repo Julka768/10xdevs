@@ -201,28 +201,28 @@ Not applicable — new table, no existing data to migrate.
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 Linting passes
+- [x] 2.1 Type checking passes — 68f52a8
+- [x] 2.2 Linting passes — 68f52a8
 
 #### Manual
 
-- [ ] 2.3 Valid submission creates a new row visible only to the submitting user
-- [ ] 2.4 Invalid value is rejected, no row inserted
-- [ ] 2.5 Submitting the same goal_type twice succeeds both times
-- [ ] 2.6 Unauthenticated request redirects to /auth/signin
+- [x] 2.3 Valid submission creates a new row visible only to the submitting user
+- [x] 2.4 Invalid value is rejected, no row inserted
+- [x] 2.5 Submitting the same goal_type twice succeeds both times
+- [x] 2.6 Unauthenticated request redirects to /auth/signin
 
 ### Phase 3: UI — goal page and dashboard shell display
 
 #### Automated
 
-- [ ] 3.1 Type checking passes
-- [ ] 3.2 Linting passes
+- [x] 3.1 Type checking passes
+- [x] 3.2 Linting passes
 
 #### Manual
 
-- [ ] 3.3 Empty state shows form with nothing pre-selected and "No goal set yet" message
-- [ ] 3.4 Setting a goal for the first time shows it as current
-- [ ] 3.5 Edit link reopens form pre-selected to current value
-- [ ] 3.6 Submitting a new value updates the displayed current goal
-- [ ] 3.7 dashboard.astro shows current goal (or "not set") and links to /dashboard/goal
-- [ ] 3.8 A second user sees no goal data from the first user's account
+- [x] 3.3 Empty state shows form with nothing pre-selected and "No goal set yet" message
+- [x] 3.4 Setting a goal for the first time shows it as current
+- [x] 3.5 Edit link reopens form pre-selected to current value
+- [x] 3.6 Submitting a new value updates the displayed current goal
+- [x] 3.7 dashboard.astro shows current goal (or "not set") and links to /dashboard/goal
+- [x] 3.8 A second user sees no goal data from the first user's account
