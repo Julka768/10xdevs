@@ -297,22 +297,22 @@ No schema changes in this phase — it only adds tests plus the harness/config f
 
 #### Automated
 
-- [x] 3.1 Phase 3 test file passes against local Supabase + local dev server
-- [x] 3.2 Linting passes
-- [x] 3.3 Build passes
+- [x] 3.1 Phase 3 test file passes against local Supabase + local dev server — 1d3b78d
+- [x] 3.2 Linting passes — 1d3b78d
+- [x] 3.3 Build passes — 1d3b78d
 
 #### Manual
 
-- [ ] 3.4 Dev-server helper cleanly terminates the spawned process after the suite
+- [x] 3.4 Dev-server helper cleanly terminates the spawned process after the suite — 1d3b78d
 
 ### Phase 4: ON DELETE cascade behavior tests
 
 #### Automated
 
-- [ ] 4.1 Full suite (Phases 2-4) passes against a freshly reset local Supabase
-- [ ] 4.2 Linting passes
-- [ ] 4.3 Build passes
+- [x] 4.1 Full suite (Phases 2-4) passes against a freshly reset local Supabase
+- [x] 4.2 Linting passes
+- [x] 4.3 Build passes
 
 #### Manual
 
-- [ ] 4.4 Full local run confirmed end-to-end from a clean state
+- [x] 4.4 Full local run confirmed end-to-end from a clean state
