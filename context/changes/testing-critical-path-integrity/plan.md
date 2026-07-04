@@ -285,21 +285,21 @@ No schema changes in this phase — it only adds tests plus the harness/config f
 
 #### Automated
 
-- [x] 2.1 All Phase 2 test files pass against a freshly reset local Supabase
-- [x] 2.2 Linting passes
-- [x] 2.3 Build passes
+- [x] 2.1 All Phase 2 test files pass against a freshly reset local Supabase — 05a52df
+- [x] 2.2 Linting passes — 05a52df
+- [x] 2.3 Build passes — 05a52df
 
 #### Manual
 
-- [x] 2.4 Reverting the hardening migration causes the plan_id-squatting regression test to fail
+- [x] 2.4 Reverting the hardening migration causes the plan_id-squatting regression test to fail — 05a52df
 
 ### Phase 3: API-route authorization (IDOR) tests
 
 #### Automated
 
-- [ ] 3.1 Phase 3 test file passes against local Supabase + local dev server
-- [ ] 3.2 Linting passes
-- [ ] 3.3 Build passes
+- [x] 3.1 Phase 3 test file passes against local Supabase + local dev server
+- [x] 3.2 Linting passes
+- [x] 3.3 Build passes
 
 #### Manual
 
