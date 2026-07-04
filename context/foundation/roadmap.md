@@ -156,7 +156,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-01       | training-plan-data-foundation      | [#8](https://github.com/Julka768/10xdevs/issues/8)   | done                   | Implemented; issue closed                  |
 | S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | done                   | Implemented; issue closed                  |
 | S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | done                   | Implemented; issue closed                  |
-| S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue #11 to be closed after push |
+| S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue closed                  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | yes                    | Run `/10x-plan log-daily-calories`         |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | yes                    | Run `/10x-plan log-weekly-measurements`    |
 | S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | no                     | Waiting on S-02/S-03/S-04/S-05 (#10-13)    |
