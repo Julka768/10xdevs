@@ -271,27 +271,27 @@ No schema changes in this phase — it only adds tests plus the harness/config f
 
 #### Automated
 
-- [x] 1.1 `npm install` completes with vitest added
-- [x] 1.2 `npm run test:integration` runs without configuration errors
-- [x] 1.3 Linting passes
-- [x] 1.4 Build passes
+- [x] 1.1 `npm install` completes with vitest added — 6bae265
+- [x] 1.2 `npm run test:integration` runs without configuration errors — 6bae265
+- [x] 1.3 Linting passes — 6bae265
+- [x] 1.4 Build passes — 6bae265
 
 #### Manual
 
-- [x] 1.5 `createFixtureUser()`/`deleteFixtureUser()` leave no residual rows in `auth.users`
-- [x] 1.6 Updated README line accurately describes the `supabase db reset` step
+- [x] 1.5 `createFixtureUser()`/`deleteFixtureUser()` leave no residual rows in `auth.users` — 6bae265
+- [x] 1.6 Updated README line accurately describes the `supabase db reset` step — 6bae265
 
 ### Phase 2: Ownership / RLS / GRANT integration tests
 
 #### Automated
 
-- [ ] 2.1 All Phase 2 test files pass against a freshly reset local Supabase
-- [ ] 2.2 Linting passes
-- [ ] 2.3 Build passes
+- [x] 2.1 All Phase 2 test files pass against a freshly reset local Supabase
+- [x] 2.2 Linting passes
+- [x] 2.3 Build passes
 
 #### Manual
 
-- [ ] 2.4 Reverting the hardening migration causes the plan_id-squatting regression test to fail
+- [x] 2.4 Reverting the hardening migration causes the plan_id-squatting regression test to fail
 
 ### Phase 3: API-route authorization (IDOR) tests
 
