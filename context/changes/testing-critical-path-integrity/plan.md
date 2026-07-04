@@ -309,10 +309,10 @@ No schema changes in this phase — it only adds tests plus the harness/config f
 
 #### Automated
 
-- [x] 4.1 Full suite (Phases 2-4) passes against a freshly reset local Supabase
-- [x] 4.2 Linting passes
-- [x] 4.3 Build passes
+- [x] 4.1 Full suite (Phases 2-4) passes against a freshly reset local Supabase — 78b2760
+- [x] 4.2 Linting passes — 78b2760
+- [x] 4.3 Build passes — 78b2760
 
 #### Manual
 
-- [x] 4.4 Full local run confirmed end-to-end from a clean state
+- [x] 4.4 Full local run confirmed end-to-end from a clean state — 78b2760
