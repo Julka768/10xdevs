@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
+import { goalLabels } from "@/lib/goal-labels";
 
 const { user } = Astro.locals;
 
@@ -13,12 +14,6 @@ const { data: goal } = supabase
       .limit(1)
       .maybeSingle()
   : { data: null };
-
-const goalLabels: Record<string, string> = {
-  lose: "Lose weight",
-  gain: "Gain weight",
-  maintain: "Maintain weight",
-};
 ---
 
 <Layout title="Dashboard">

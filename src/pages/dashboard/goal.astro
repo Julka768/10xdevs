@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { ServerError } from "@/components/auth/ServerError";
+import { goalLabels } from "@/lib/goal-labels";
 
 const error = Astro.url.searchParams.get("error");
 const editing = Astro.url.searchParams.get("edit") !== null;
@@ -16,12 +17,6 @@ const { data: goal } = supabase
       .limit(1)
       .maybeSingle()
   : { data: null };
-
-const goalLabels: Record<string, string> = {
-  lose: "Lose weight",
-  gain: "Gain weight",
-  maintain: "Maintain weight",
-};
 
 const showForm = !goal || editing;
 ---
