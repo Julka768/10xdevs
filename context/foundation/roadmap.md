@@ -30,7 +30,7 @@ Gym-goers currently track lifting, body measurements, and calories in separate s
 | ID   | Change ID                          | Outcome (user can …)                                             | Prerequisites          | PRD refs             | Status   |
 | ---- | ----------------------------------- | ------------------------------------------------------------------ | ----------------------- | --------------------- | -------- |
 | F-01 | training-plan-data-foundation       | (foundation) Supabase schema + RLS pattern for plans/exercises     | —                        | FR-002, FR-003         | done     |
-| S-01 | create-and-manage-training-plan     | create, view, edit, and delete exercises in a training plan        | F-01                    | FR-002, FR-003         | ready    |
+| S-01 | create-and-manage-training-plan     | create, view, edit, and delete exercises in a training plan        | F-01                    | FR-002, FR-003         | done     |
 | S-02 | log-workout-against-plan            | log a workout session (exercise, weight, reps) against their plan  | S-01                    | US-01, FR-001, FR-005  | proposed |
 | S-03 | set-body-composition-goal           | set and edit a body-composition goal at any time                   | —                        | FR-004                 | ready    |
 | S-04 | log-daily-calories                  | log calories consumed for a given day                              | —                        | FR-006                 | ready    |
@@ -87,7 +87,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Free-text exercise entry (no shared library) risks typos/duplicate names — PRD accepts this risk explicitly for v1; do not over-build validation here given the `speed` goal.
-- **Status:** ready
+- **Status:** done
 
 ### S-02: User logs a workout session against their plan
 
@@ -154,8 +154,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID                        | GitHub Issue                                                  | Ready for `/10x-plan` | Notes                                   |
 | ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------- | ------------------------------------------ |
 | F-01       | training-plan-data-foundation      | [#8](https://github.com/Julka768/10xdevs/issues/8)   | done                   | Implemented; issue closed                  |
-| S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | yes                    | F-01 done — run `/10x-plan create-and-manage-training-plan` |
-| S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | no                     | Waiting on S-01 (#9); north star           |
+| S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | done                   | Implemented; issue closed                  |
+| S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | yes                    | S-01 done — north star; run `/10x-plan log-workout-against-plan` |
 | S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | yes                    | Run `/10x-plan set-body-composition-goal`  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | yes                    | Run `/10x-plan log-daily-calories`         |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | yes                    | Run `/10x-plan log-weekly-measurements`    |
@@ -182,4 +182,5 @@ None — PRD's `## Open Questions` is empty, and no new cross-cutting question s
 ## Done
 
 - **F-01: (foundation) Supabase schema + RLS pattern for plans/exercises** — Implemented 2026-07-03 in `context/changes/training-plan-data-foundation/` (not yet archived). Lesson: pair RLS with explicit GRANTs (see `context/foundation/lessons.md`).
+- **S-01: User creates and manages a training plan** — Implemented 2026-07-03 in `context/changes/create-and-manage-training-plan/` (3 phases: foundation, plans, exercises; not yet archived). Target weight per exercise was deferred — see Parked.
 
