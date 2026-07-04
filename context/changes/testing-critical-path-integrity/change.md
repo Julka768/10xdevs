@@ -1,7 +1,7 @@
 ---
 change_id: testing-critical-path-integrity
 title: Critical-path integrity & authorization tests (test-plan rollout Phase 1)
-status: implemented
+status: impl_reviewed
 created: 2026-07-04
 updated: 2026-07-04
 archived_at: null

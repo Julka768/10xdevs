@@ -17,12 +17,25 @@ function requireEnv(name: string, value: string | undefined): string {
   return value;
 }
 
+const LOCAL_SUPABASE_HOSTNAMES = new Set(["localhost", "127.0.0.1"]);
+
+function assertLocalSupabaseUrl(url: string): void {
+  const { hostname } = new URL(url);
+  if (!LOCAL_SUPABASE_HOSTNAMES.has(hostname)) {
+    throw new Error(
+      `Refusing to run the fixture harness against non-local SUPABASE_URL (host "${hostname}"). ` +
+        "This harness uses the service-role key to freely create/delete users and rows — " +
+        "it must only ever point at a local `supabase start` instance.",
+    );
+  }
+}
+
 function serviceRoleClient(): SupabaseClient<Database> {
-  return createClient<Database>(
-    requireEnv("SUPABASE_URL", SUPABASE_URL),
-    requireEnv("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY),
-    { auth: { autoRefreshToken: false, persistSession: false } },
-  );
+  const url = requireEnv("SUPABASE_URL", SUPABASE_URL);
+  assertLocalSupabaseUrl(url);
+  return createClient<Database>(url, requireEnv("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY), {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
 }
 
 export interface FixtureUser {

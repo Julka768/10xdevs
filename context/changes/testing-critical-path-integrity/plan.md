@@ -72,7 +72,7 @@ Install Vitest, add the local-only service-role key, build the two-user create/s
 
 **Intent**: Give the fixture harness the service-role key `supabase start` already prints locally, scoped to test-only env loading, without touching `.env`/`.dev.vars` or any app code path.
 
-**Contract**: `.env.test.example` documents `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (local values only). `.gitignore` gets `.env.test` added alongside the existing `.dev.vars` ignore entry. The developer copies it to `.env.test` locally with the values `supabase start` prints; this file is never committed.
+**Contract**: `.env.test.example` documents `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` (local values only) — the anon key is required by the per-user authenticated clients in the fixture harness and by the Phase 3 session-cookie helper. `.gitignore` gets `.env.test` added alongside the existing `.dev.vars` ignore entry. The developer copies it to `.env.test` locally with the values `supabase start` prints; this file is never committed.
 
 #### 3. Two-user fixture harness
 
@@ -166,11 +166,11 @@ Start a real Astro dev server against the local Supabase instance, sign in as tw
 
 #### 1. Dev-server lifecycle helper
 
-**File**: `tests/integration/support/dev-server.ts` (new)
+**File**: `tests/integration/support/dev-server.ts` (new), `tests/integration/support/session-cookie.ts` (new)
 
-**Intent**: Start/stop `astro dev` for the duration of the route-authorization suite, with a readiness poll.
+**Intent**: Start/stop `astro dev` for the duration of the route-authorization suite, with a readiness poll. `session-cookie.ts` was added during implementation as a single-responsibility extraction — it derives a real `Cookie` header from a fixture user's session via `@supabase/ssr`'s `createServerClient` storage adapter, so `plans-authorization.test.ts` doesn't hand-roll cookie encoding.
 
-**Contract**: Exports `startDevServer(): Promise<{ baseUrl: string; stop: () => Promise<void> }>` — spawns the process, polls the root URL with retries until it responds, returns the base URL and a teardown function. Used in a `beforeAll`/`afterAll` in the route test file only — the DB-only Phase 2/4 suites don't need it.
+**Contract**: `dev-server.ts` exports `startDevServer(): Promise<{ baseUrl: string; stop: () => Promise<void> }>` — spawns the process, polls the root URL with retries until it responds, returns the base URL and a teardown function. Used in a `beforeAll`/`afterAll` in the route test file only — the DB-only Phase 2/4 suites don't need it. `session-cookie.ts` exports `buildSessionCookieHeader` for constructing a real, authenticated `Cookie` header from a fixture user's session.
 
 #### 2. Route authorization tests
 

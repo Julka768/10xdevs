@@ -1,11 +1,10 @@
 import http from "node:http";
 import { URL } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database, Tables } from "@/lib/database.types";
 import { withTwoFixtureUsers } from "../support/fixture-users";
 import { buildSessionCookieHeader } from "../support/session-cookie";
 import { startDevServer, type DevServerHandle } from "../support/dev-server";
+import { seedPlanExerciseLog } from "../support/seed";
 
 const RAW_DB_ERROR_PATTERN =
   /relation|column|constraint|permission denied|PGRST|duplicate key|null value|row-level security|policy|violates/i;
@@ -45,44 +44,8 @@ async function postForm(url: string, cookie: string, form: URLSearchParams): Pro
   });
 }
 
-async function seedPlanExerciseLog(
-  client: SupabaseClient<Database>,
-  userId: string,
-): Promise<{ plan: Tables<"training_plans">; exercise: Tables<"exercises">; log: Tables<"workout_logs"> }> {
-  const { data: plan } = await client
-    .from("training_plans")
-    .insert({ user_id: userId, name: "Plan" })
-    .select()
-    .single();
-  if (!plan) throw new Error("expected plan to be created");
-
-  const { data: exercise } = await client
-    .from("exercises")
-    .insert({ user_id: userId, plan_id: plan.id, name: "Squat", target_sets: 3, target_reps: 5, position: 1 })
-    .select()
-    .single();
-  if (!exercise) throw new Error("expected exercise to be created");
-
-  const { data: log } = await client
-    .from("workout_logs")
-    .insert({
-      user_id: userId,
-      plan_id: plan.id,
-      exercise_id: exercise.id,
-      exercise_name: exercise.name,
-      weight: 100,
-      reps: 5,
-      sets_completed: 3,
-    })
-    .select()
-    .single();
-  if (!log) throw new Error("expected log to be created");
-
-  return { plan, exercise, log };
-}
-
 describe("plans API route authorization (IDOR)", () => {
-  let devServer: DevServerHandle;
+  let devServer: DevServerHandle | undefined;
   let baseUrl: string;
 
   beforeAll(async () => {
@@ -91,7 +54,9 @@ describe("plans API route authorization (IDOR)", () => {
   }, 60_000);
 
   afterAll(async () => {
-    await devServer.stop();
+    if (devServer) {
+      await devServer.stop();
+    }
   }, 30_000);
 
   function expectSafeRedirect(result: HttpResult): void {

@@ -54,7 +54,14 @@ export async function startDevServer(): Promise<DevServerHandle> {
   child.stdout.on("data", (chunk: Buffer) => output.push(chunk.toString()));
   child.stderr.on("data", (chunk: Buffer) => output.push(chunk.toString()));
 
-  await waitUntilReady(baseUrl, child, output);
+  try {
+    await waitUntilReady(baseUrl, child, output);
+  } catch (error) {
+    if (child.pid) {
+      killProcessTree(child.pid);
+    }
+    throw error;
+  }
 
   const stop = async (): Promise<void> => {
     if (child.pid) {
@@ -68,7 +75,13 @@ export async function startDevServer(): Promise<DevServerHandle> {
       child.once("exit", () => {
         resolve();
       });
-      setTimeout(resolve, 5000);
+      setTimeout(() => {
+        if (child.exitCode === null) {
+          // eslint-disable-next-line no-console -- surfaces an otherwise-silent stuck test process
+          console.warn(`Dev server (pid ${child.pid}) did not exit within 5000ms after kill`);
+        }
+        resolve();
+      }, 5000);
     });
   };
 
