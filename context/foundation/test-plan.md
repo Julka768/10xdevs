@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-07-04 (Phase 1 planned)
+> Last updated: 2026-07-04 (Phase 1 complete)
 
 ## 1. Strategy
 
@@ -65,7 +65,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Critical-path integrity & authorization | Bootstrap the integration test runner + a two-seeded-user Supabase fixture harness, then prove ownership/attribution/cascade/authorization correctness across every existing and upcoming domain table | #1, #2, #3, #4 | integration | planned | `context/changes/testing-critical-path-integrity/` |
+| 1 | Critical-path integrity & authorization | Bootstrap the integration test runner + a two-seeded-user Supabase fixture harness, then prove ownership/attribution/cascade/authorization correctness across every existing and upcoming domain table | #1, #2, #3, #4 | integration | complete | `context/changes/testing-critical-path-integrity/` |
 | 2 | Weekly report correctness | Prove FR-008's volume-trend/measurement-delta/calorie-vs-goal computation against independently hand-computed fixture data, once S-06 is built | #5 | unit + integration | not started | — |
 | 3 | Date/timezone boundary hardening | Unit-test the date/week-boundary logic shared across logging and reporting, parametrized across timezones | #6 | unit | not started | — |
 | 4 | Quality-gates wiring | Require the new integration/unit suites in CI alongside the existing lint+build gate | cross-cutting | gates | not started | — |
