@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["tests/integration/**/*.test.ts"],
+    include: ["tests/**/*.test.ts"],
     env: loadEnv("test", process.cwd(), ""),
     passWithNoTests: true,
   },

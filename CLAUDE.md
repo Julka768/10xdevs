@@ -9,7 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run preview` — preview production build
 - `npm run lint` / `npm run lint:fix` — ESLint with type-checked rules
 - `npm run format` — Prettier (`prettier-plugin-astro` + `prettier-plugin-tailwindcss`)
-- No test suite exists yet.
+- `npm run test:unit` — Vitest unit tests (`tests/unit/`, no external services needed)
+- `npm run test:integration` — Vitest integration tests (`tests/integration/`, requires local Supabase via `supabase start`)
 - Pre-commit (husky + lint-staged): `eslint --fix` on `*.{ts,tsx,astro}`, `prettier --write` on `*.{json,css,md}`.
 
 ## Architecture
