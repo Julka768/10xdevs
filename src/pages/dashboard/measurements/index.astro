@@ -9,9 +9,11 @@ import { DeleteConfirmButton } from "@/components/plans/DeleteConfirmButton";
 
 const error = Astro.url.searchParams.get("error");
 const editingId = Astro.url.searchParams.get("edit");
+const editingTypeId = Astro.url.searchParams.get("edit_type");
 const today = new Date().toISOString().slice(0, 10);
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
+
 const { data: entries } = supabase
   ? await supabase
       .from("body_measurements")
@@ -19,6 +21,23 @@ const { data: entries } = supabase
       .order("logged_at", { ascending: false })
       .order("created_at", { ascending: false })
   : { data: null };
+
+const { data: customTypesData } = supabase
+  ? await supabase.from("measurement_types").select("id, name").order("created_at", { ascending: true })
+  : { data: null };
+const customTypes = customTypesData ?? [];
+
+const { data: valuesData } = supabase
+  ? await supabase.from("measurement_values").select("measurement_id, type_id, value")
+  : { data: null };
+
+const emptyCustomValues = new Map<string, number>();
+const valuesByMeasurement = new Map<string, Map<string, number>>();
+for (const v of valuesData ?? []) {
+  const forEntry = valuesByMeasurement.get(v.measurement_id) ?? new Map<string, number>();
+  forEntry.set(v.type_id, v.value);
+  valuesByMeasurement.set(v.measurement_id, forEntry);
+}
 
 const entriesByDate = new Map<string, NonNullable<typeof entries>>();
 for (const entry of entries ?? []) {
@@ -42,6 +61,66 @@ const circumferenceFields = [
       <a href="/dashboard" class="text-sm text-blue-100/70 hover:underline">← Back to dashboard</a>
 
       <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Your measurement types</h2>
+
+        {
+          customTypes.length > 0 && (
+            <div class="mb-4 space-y-2">
+              {customTypes.map((type) =>
+                type.id === editingTypeId ? (
+                  <form
+                    method="POST"
+                    action={`/api/measurement-types/${type.id}/update`}
+                    class="flex items-end gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+                  >
+                    <div class="flex-1 space-y-1.5">
+                      <Label htmlFor={`edit-type-name-${type.id}`}>Name</Label>
+                      <Input id={`edit-type-name-${type.id}`} name="name" value={type.name} required />
+                    </div>
+                    <Button type="submit" variant="secondary">
+                      Save
+                    </Button>
+                    <a href="/dashboard/measurements" class="text-sm text-blue-100/70 hover:underline">
+                      Cancel
+                    </a>
+                  </form>
+                ) : (
+                  <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                    <p class="font-medium">{type.name}</p>
+                    <div class="flex items-center gap-3">
+                      <a
+                        href={`/dashboard/measurements?edit_type=${type.id}`}
+                        class="text-sm text-blue-100/70 hover:underline"
+                      >
+                        Rename
+                      </a>
+                      <DeleteConfirmButton
+                        client:load
+                        action={`/api/measurement-types/${type.id}/delete`}
+                        itemLabel={type.name}
+                      />
+                    </div>
+                  </div>
+                ),
+              )}
+            </div>
+          )
+        }
+
+        {
+          customTypes.length < 10 && (
+            <form method="POST" action="/api/measurement-types" class="flex items-end gap-3">
+              <div class="flex-1 space-y-1.5">
+                <Label htmlFor="new-type-name">Add a measurement type</Label>
+                <Input id="new-type-name" name="name" placeholder="e.g. Neck" required />
+              </div>
+              <Button type="submit">Add</Button>
+            </form>
+          )
+        }
+      </div>
 
       <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
         <h2 class="mb-4 text-xl font-semibold">Log measurement</h2>
@@ -71,6 +150,14 @@ const circumferenceFields = [
             <Label htmlFor="thighs">Thighs (cm)</Label>
             <Input id="thighs" name="thighs" type="number" step="0.1" min="0.1" />
           </div>
+          {
+            customTypes.map((type) => (
+              <div class="w-24 space-y-1.5">
+                <Label htmlFor={`custom-${type.id}`}>{type.name}</Label>
+                <Input id={`custom-${type.id}`} name={`custom_${type.id}`} type="number" step="0.1" min="0.1" />
+              </div>
+            ))
+          }
           <div class="w-40 space-y-1.5">
             <Label htmlFor="logged_at">Date</Label>
             <Input id="logged_at" name="logged_at" type="date" value={today} required />
@@ -89,8 +176,9 @@ const circumferenceFields = [
                 <div>
                   <h3 class="mb-2 text-sm font-semibold text-blue-100/70">{date}</h3>
                   <div class="space-y-3">
-                    {dayEntries.map((entry) =>
-                      entry.id === editingId ? (
+                    {dayEntries.map((entry) => {
+                      const entryCustomValues = valuesByMeasurement.get(entry.id) ?? emptyCustomValues;
+                      return entry.id === editingId ? (
                         <form
                           method="POST"
                           action={`/api/measurements/${entry.id}/update`}
@@ -121,6 +209,19 @@ const circumferenceFields = [
                               />
                             </div>
                           ))}
+                          {customTypes.map((type) => (
+                            <div class="w-24 space-y-1.5">
+                              <Label htmlFor={`edit-custom-${type.id}-${entry.id}`}>{type.name}</Label>
+                              <Input
+                                id={`edit-custom-${type.id}-${entry.id}`}
+                                name={`custom_${type.id}`}
+                                type="number"
+                                step="0.1"
+                                min="0.1"
+                                value={entryCustomValues.get(type.id) ?? ""}
+                              />
+                            </div>
+                          ))}
                           <div class="w-40 space-y-1.5">
                             <Label htmlFor={`edit-date-${entry.id}`}>Date</Label>
                             <Input
@@ -142,12 +243,17 @@ const circumferenceFields = [
                         <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
                           <div>
                             <p class="font-medium">{entry.weight} kg</p>
-                            {circumferenceFields.some((field) => entry[field.key] !== null) && (
+                            {(circumferenceFields.some((field) => entry[field.key] !== null) ||
+                              customTypes.some((type) => entryCustomValues.has(type.id))) && (
                               <p class="text-sm text-blue-100/70">
-                                {circumferenceFields
-                                  .filter((field) => entry[field.key] !== null)
-                                  .map((field) => `${field.label}: ${entry[field.key]}cm`)
-                                  .join(" · ")}
+                                {[
+                                  ...circumferenceFields
+                                    .filter((field) => entry[field.key] !== null)
+                                    .map((field) => `${field.label}: ${entry[field.key]}cm`),
+                                  ...customTypes
+                                    .filter((type) => entryCustomValues.has(type.id))
+                                    .map((type) => `${type.name}: ${entryCustomValues.get(type.id)}`),
+                                ].join(" · ")}
                               </p>
                             )}
                           </div>
@@ -165,8 +271,8 @@ const circumferenceFields = [
                             />
                           </div>
                         </div>
-                      ),
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               ))}

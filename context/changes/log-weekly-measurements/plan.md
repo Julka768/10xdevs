@@ -430,37 +430,37 @@ New tables, no existing data to migrate. Phases 4-6 are purely additive on top o
 
 #### Manual
 
-- [ ] 4.4 Cross-user FK-forgery insert into `measurement_values` rejected
-- [ ] 4.5 Deleting a `measurement_types` row cascades to its `measurement_values`
-- [ ] 4.6 Duplicate `(measurement_id, type_id)` value rejected by unique constraint
+- [x] 4.4 Cross-user FK-forgery insert into `measurement_values` rejected — 742ffc6
+- [x] 4.5 Deleting a `measurement_types` row cascades to its `measurement_values` — 742ffc6
+- [x] 4.6 Duplicate `(measurement_id, type_id)` value rejected by unique constraint — 742ffc6
 
 ### Phase 5: API routes — manage custom types, extend measurement create/update
 
 #### Automated
 
-- [x] 5.1 Build passes: `npm run build`
-- [x] 5.2 Lint passes: `npm run lint`
+- [x] 5.1 Build passes: `npm run build` — 52bf507
+- [x] 5.2 Lint passes: `npm run lint` — 52bf507
 
 #### Manual
 
-- [ ] 5.3 11th custom type rejected with limit error
-- [ ] 5.4 Renaming a custom type doesn't affect existing values
-- [ ] 5.5 Deleting a custom type removes it from the form and its historical values
-- [ ] 5.6 Logging a custom value creates a `measurement_values` row
-- [ ] 5.7 Clearing a custom value on edit deletes its row
-- [ ] 5.8 Forged foreign `custom_<type-id>` field is ignored
+- [x] 5.3 11th custom type rejected with limit error — 52bf507
+- [x] 5.4 Renaming a custom type doesn't affect existing values — 52bf507
+- [x] 5.5 Deleting a custom type removes it from the form and its historical values — 52bf507
+- [x] 5.6 Logging a custom value creates a `measurement_values` row — 52bf507
+- [x] 5.7 Clearing a custom value on edit deletes its row — 52bf507
+- [x] 5.8 Forged foreign `custom_<type-id>` field is ignored — 52bf507
 
 ### Phase 6: UI — manage custom types, dynamic fields in log form and history
 
 #### Automated
 
-- [ ] 6.1 Build passes: `npm run build`
-- [ ] 6.2 Lint passes: `npm run lint`
+- [x] 6.1 Build passes: `npm run build`
+- [x] 6.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 6.3 Adding a custom type shows a new input in the log form
-- [ ] 6.4 Renaming updates the label everywhere without re-logging
-- [ ] 6.5 Deleting removes the input and its history values
-- [ ] 6.6 Logging/editing custom values round-trips correctly through the UI
-- [ ] 6.7 Cross-user isolation verified for custom types and values
+- [x] 6.3 Adding a custom type shows a new input in the log form
+- [x] 6.4 Renaming updates the label everywhere without re-logging
+- [x] 6.5 Deleting removes the input and its history values
+- [x] 6.6 Logging/editing custom values round-trips correctly through the UI
+- [x] 6.7 Cross-user isolation verified for custom types and values
