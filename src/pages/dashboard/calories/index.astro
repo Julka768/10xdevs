@@ -1,0 +1,135 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ServerError } from "@/components/auth/ServerError";
+import { DeleteConfirmButton } from "@/components/plans/DeleteConfirmButton";
+
+const error = Astro.url.searchParams.get("error");
+const editingId = Astro.url.searchParams.get("edit");
+const today = new Date().toISOString().slice(0, 10);
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: entries } = supabase
+  ? await supabase
+      .from("calorie_logs")
+      .select("id, calories, logged_at")
+      .order("logged_at", { ascending: false })
+      .order("created_at", { ascending: false })
+  : { data: null };
+
+const entriesByDate = new Map<string, NonNullable<typeof entries>>();
+for (const entry of entries ?? []) {
+  const dayEntries = entriesByDate.get(entry.logged_at) ?? [];
+  dayEntries.push(entry);
+  entriesByDate.set(entry.logged_at, dayEntries);
+}
+---
+
+<Layout title="Calories">
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <a href="/dashboard" class="text-sm text-blue-100/70 hover:underline">← Back to dashboard</a>
+
+      <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Log calories</h2>
+
+        <form method="POST" action="/api/calories" class="flex flex-wrap items-end gap-3">
+          <div class="w-32 space-y-1.5">
+            <Label htmlFor="calories">Calories</Label>
+            <Input id="calories" name="calories" type="number" min="1" required />
+          </div>
+          <div class="w-40 space-y-1.5">
+            <Label htmlFor="logged_at">Date</Label>
+            <Input id="logged_at" name="logged_at" type="date" value={today} required />
+          </div>
+          <Button type="submit">Log</Button>
+        </form>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">History</h2>
+
+        {
+          entriesByDate.size > 0 ? (
+            <div class="space-y-6">
+              {[...entriesByDate.entries()].map(([date, dayEntries]) => {
+                const total = dayEntries.reduce((sum, entry) => sum + entry.calories, 0);
+                return (
+                  <div>
+                    <h3 class="mb-2 flex items-baseline justify-between text-sm font-semibold text-blue-100/70">
+                      <span>{date}</span>
+                      <span>{total} kcal</span>
+                    </h3>
+                    <div class="space-y-3">
+                      {dayEntries.map((entry) =>
+                        entry.id === editingId ? (
+                          <form
+                            method="POST"
+                            action={`/api/calories/${entry.id}/update`}
+                            class="flex flex-wrap items-end gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+                          >
+                            <div class="w-32 space-y-1.5">
+                              <Label htmlFor={`edit-calories-${entry.id}`}>Calories</Label>
+                              <Input
+                                id={`edit-calories-${entry.id}`}
+                                name="calories"
+                                type="number"
+                                min="1"
+                                value={entry.calories}
+                                required
+                              />
+                            </div>
+                            <div class="w-40 space-y-1.5">
+                              <Label htmlFor={`edit-date-${entry.id}`}>Date</Label>
+                              <Input
+                                id={`edit-date-${entry.id}`}
+                                name="logged_at"
+                                type="date"
+                                value={entry.logged_at}
+                                required
+                              />
+                            </div>
+                            <Button type="submit" variant="secondary">
+                              Save
+                            </Button>
+                            <a href="/dashboard/calories" class="text-sm text-blue-100/70 hover:underline">
+                              Cancel
+                            </a>
+                          </form>
+                        ) : (
+                          <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                            <p class="font-medium">{entry.calories} kcal</p>
+                            <div class="flex items-center gap-3">
+                              <a
+                                href={`/dashboard/calories?edit=${entry.id}`}
+                                class="text-sm text-blue-100/70 hover:underline"
+                              >
+                                Edit
+                              </a>
+                              <DeleteConfirmButton
+                                client:load
+                                action={`/api/calories/${entry.id}/delete`}
+                                itemLabel={`${entry.calories} kcal`}
+                              />
+                            </div>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">No calorie entries yet. Log one above to get started.</p>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</Layout>

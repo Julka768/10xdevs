@@ -225,15 +225,15 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [x] 2.1 Type check passes
-- [x] 2.2 Linting passes
+- [x] 2.1 Type check passes — df2fe10
+- [x] 2.2 Linting passes — df2fe10
 
 #### Manual
 
-- [ ] 2.3 Future-dated `logged_at` is rejected with an error, no row inserted
-- [ ] 2.4 Valid submission creates a row visible only to the logging user
-- [ ] 2.5 Editing updates only calories/date
-- [ ] 2.6 Deleting removes the entry and redirects back to the calories page
+- [x] 2.3 Future-dated `logged_at` is rejected with an error, no row inserted — df2fe10
+- [x] 2.4 Valid submission creates a row visible only to the logging user — df2fe10
+- [x] 2.5 Editing updates only calories/date — df2fe10
+- [x] 2.6 Deleting removes the entry and redirects back to the calories page — df2fe10
 
 ### Phase 3: UI — calories page, nav link, date-grouped history with daily totals
 
@@ -244,8 +244,8 @@ New table, no existing data to migrate.
 
 #### Manual
 
-- [ ] 3.3 Nav link navigates to `/dashboard/calories`
-- [ ] 3.4 Logging an entry shows it grouped under today's date with a correct total
-- [ ] 3.5 A second same-date entry updates the group's total correctly
-- [ ] 3.6 Inline edit and delete work without navigating away
-- [ ] 3.7 A second user sees no entries from the first user's account
+- [x] 3.3 Nav link navigates to `/dashboard/calories`
+- [x] 3.4 Logging an entry shows it grouped under today's date with a correct total
+- [x] 3.5 A second same-date entry updates the group's total correctly
+- [x] 3.6 Inline edit and delete work without navigating away
+- [x] 3.7 A second user sees no entries from the first user's account
