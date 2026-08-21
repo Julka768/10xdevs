@@ -41,6 +41,30 @@ export interface Database {
         };
         Relationships: [];
       };
+      calorie_logs: {
+        Row: {
+          calories: number;
+          created_at: string;
+          id: string;
+          logged_at: string;
+          user_id: string;
+        };
+        Insert: {
+          calories: number;
+          created_at?: string;
+          id?: string;
+          logged_at?: string;
+          user_id: string;
+        };
+        Update: {
+          calories?: number;
+          created_at?: string;
+          id?: string;
+          logged_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       exercises: {
         Row: {
           created_at: string;

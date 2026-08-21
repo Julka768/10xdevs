@@ -1,9 +1,9 @@
 ---
 change_id: log-daily-calories
 title: Log calories consumed for a given day
-status: planned
+status: impl_reviewed
 created: 2026-07-04
-updated: 2026-07-04
+updated: 2026-08-21
 archived_at: null
 ---
 

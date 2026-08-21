@@ -211,41 +211,41 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly against local Supabase
-- [ ] 1.2 Type check passes
-- [ ] 1.3 Linting passes
+- [x] 1.1 Migration applies cleanly against local Supabase — c9fcb7a
+- [x] 1.2 Type check passes — c9fcb7a
+- [x] 1.3 Linting passes — c9fcb7a
 
 #### Manual
 
-- [ ] 1.4 Cross-user insert into `calorie_logs` is blocked by RLS
-- [ ] 1.5 Future-dated entry rejected at the DB layer
-- [ ] 1.6 Multiple same-date entries for one user are all accepted
+- [x] 1.4 Cross-user insert into `calorie_logs` is blocked by RLS — c9fcb7a
+- [x] 1.5 Future-dated entry rejected at the DB layer — c9fcb7a
+- [x] 1.6 Multiple same-date entries for one user are all accepted — c9fcb7a
 
 ### Phase 2: API routes — create, update, delete calorie entries
 
 #### Automated
 
-- [ ] 2.1 Type check passes
-- [ ] 2.2 Linting passes
+- [x] 2.1 Type check passes — df2fe10
+- [x] 2.2 Linting passes — df2fe10
 
 #### Manual
 
-- [ ] 2.3 Future-dated `logged_at` is rejected with an error, no row inserted
-- [ ] 2.4 Valid submission creates a row visible only to the logging user
-- [ ] 2.5 Editing updates only calories/date
-- [ ] 2.6 Deleting removes the entry and redirects back to the calories page
+- [x] 2.3 Future-dated `logged_at` is rejected with an error, no row inserted — df2fe10
+- [x] 2.4 Valid submission creates a row visible only to the logging user — df2fe10
+- [x] 2.5 Editing updates only calories/date — df2fe10
+- [x] 2.6 Deleting removes the entry and redirects back to the calories page — df2fe10
 
 ### Phase 3: UI — calories page, nav link, date-grouped history with daily totals
 
 #### Automated
 
-- [ ] 3.1 Type check passes
-- [ ] 3.2 Linting passes
+- [x] 3.1 Type check passes — 5c4e43d
+- [x] 3.2 Linting passes — 5c4e43d
 
 #### Manual
 
-- [ ] 3.3 Nav link navigates to `/dashboard/calories`
-- [ ] 3.4 Logging an entry shows it grouped under today's date with a correct total
-- [ ] 3.5 A second same-date entry updates the group's total correctly
-- [ ] 3.6 Inline edit and delete work without navigating away
-- [ ] 3.7 A second user sees no entries from the first user's account
+- [x] 3.3 Nav link navigates to `/dashboard/calories` — 5c4e43d
+- [x] 3.4 Logging an entry shows it grouped under today's date with a correct total — 5c4e43d
+- [x] 3.5 A second same-date entry updates the group's total correctly — 5c4e43d
+- [x] 3.6 Inline edit and delete work without navigating away — 5c4e43d
+- [x] 3.7 A second user sees no entries from the first user's account — 5c4e43d
