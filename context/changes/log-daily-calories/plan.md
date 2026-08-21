@@ -211,22 +211,22 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against local Supabase
-- [x] 1.2 Type check passes
-- [x] 1.3 Linting passes
+- [x] 1.1 Migration applies cleanly against local Supabase — c9fcb7a
+- [x] 1.2 Type check passes — c9fcb7a
+- [x] 1.3 Linting passes — c9fcb7a
 
 #### Manual
 
-- [ ] 1.4 Cross-user insert into `calorie_logs` is blocked by RLS
-- [ ] 1.5 Future-dated entry rejected at the DB layer
-- [ ] 1.6 Multiple same-date entries for one user are all accepted
+- [x] 1.4 Cross-user insert into `calorie_logs` is blocked by RLS — c9fcb7a
+- [x] 1.5 Future-dated entry rejected at the DB layer — c9fcb7a
+- [x] 1.6 Multiple same-date entries for one user are all accepted — c9fcb7a
 
 ### Phase 2: API routes — create, update, delete calorie entries
 
 #### Automated
 
-- [ ] 2.1 Type check passes
-- [ ] 2.2 Linting passes
+- [x] 2.1 Type check passes
+- [x] 2.2 Linting passes
 
 #### Manual
 
@@ -239,8 +239,8 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [ ] 3.1 Type check passes
-- [ ] 3.2 Linting passes
+- [x] 3.1 Type check passes
+- [x] 3.2 Linting passes
 
 #### Manual
 
