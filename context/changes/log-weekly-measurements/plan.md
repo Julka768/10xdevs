@@ -239,44 +239,44 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db reset`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Lint passes: `npm run lint`
+- [x] 1.1 Migration applies cleanly: `npx supabase db reset` — bdc0016
+- [x] 1.2 Build passes: `npm run build` — bdc0016
+- [x] 1.3 Lint passes: `npm run lint` — bdc0016
 
 #### Manual
 
-- [ ] 1.4 Cross-user RLS insert rejection verified
-- [ ] 1.5 Future-date CHECK rejection verified
-- [ ] 1.6 Multiple same-day entries accepted
-- [ ] 1.7 Weight-only entry (all circumferences null) accepted
+- [x] 1.4 Cross-user RLS insert rejection verified — bdc0016
+- [x] 1.5 Future-date CHECK rejection verified — bdc0016
+- [x] 1.6 Multiple same-day entries accepted — bdc0016
+- [x] 1.7 Weight-only entry (all circumferences null) accepted — bdc0016
 
 ### Phase 2: API routes — create, update, delete measurement entries
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build` — fbc6e67
+- [x] 2.2 Lint passes: `npm run lint` — fbc6e67
 
 #### Manual
 
-- [ ] 2.3 Future-date submission rejected
-- [ ] 2.4 Weight-only creation succeeds
-- [ ] 2.5 Full six-field creation succeeds
-- [ ] 2.6 Clearing an optional field on edit actually nulls it out
-- [ ] 2.7 Delete removes the entry
-- [ ] 2.8 Cross-user update/delete rejected (not-found redirect)
+- [x] 2.3 Future-date submission rejected — fbc6e67
+- [x] 2.4 Weight-only creation succeeds — fbc6e67
+- [x] 2.5 Full six-field creation succeeds — fbc6e67
+- [x] 2.6 Clearing an optional field on edit actually nulls it out — fbc6e67
+- [x] 2.7 Delete removes the entry — fbc6e67
+- [x] 2.8 Cross-user update/delete rejected (not-found redirect) — fbc6e67
 
 ### Phase 3: UI — measurements page, nav link, dashboard teaser
 
 #### Automated
 
-- [ ] 3.1 Build passes: `npm run build`
-- [ ] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Build passes: `npm run build`
+- [x] 3.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Dashboard teaser shows "Not logged yet" then correct latest entry
-- [ ] 3.4 Nav link navigates to `/dashboard/measurements`
-- [ ] 3.5 Same-day entries grouped under one heading
-- [ ] 3.6 Cross-user isolation verified on page and teaser
-- [ ] 3.7 Inline edit prefill/cancel behaves correctly
+- [x] 3.3 Dashboard teaser shows "Not logged yet" then correct latest entry
+- [x] 3.4 Nav link navigates to `/dashboard/measurements`
+- [x] 3.5 Same-day entries grouped under one heading
+- [x] 3.6 Cross-user isolation verified on page and teaser
+- [x] 3.7 Inline edit prefill/cancel behaves correctly

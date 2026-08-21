@@ -14,6 +14,16 @@ const { data: goal } = supabase
       .limit(1)
       .maybeSingle()
   : { data: null };
+
+const { data: measurement } = supabase
+  ? await supabase
+      .from("body_measurements")
+      .select("weight, logged_at")
+      .order("logged_at", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+  : { data: null };
 ---
 
 <Layout title="Dashboard">
@@ -28,6 +38,12 @@ const { data: goal } = supabase
       <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
       <p class="mt-4 text-sm text-blue-100/80">
         Goal: <span class="font-semibold">{goal ? (goalLabels[goal.goal_type] ?? goal.goal_type) : "Not set yet"}</span>
+      </p>
+      <p class="mt-2 text-sm text-blue-100/80">
+        Latest measurement:{" "}
+        <span class="font-semibold">
+          {measurement ? `${measurement.weight} kg (${measurement.logged_at})` : "Not logged yet"}
+        </span>
       </p>
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
         <a
@@ -47,6 +63,12 @@ const { data: goal } = supabase
           class="inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
         >
           Calories
+        </a>
+        <a
+          href="/dashboard/measurements"
+          class="inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+        >
+          Measurements
         </a>
       </div>
       <form method="POST" action="/api/auth/signout" class="mt-6">

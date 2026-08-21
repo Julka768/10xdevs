@@ -1,0 +1,181 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ServerError } from "@/components/auth/ServerError";
+import { DeleteConfirmButton } from "@/components/plans/DeleteConfirmButton";
+
+const error = Astro.url.searchParams.get("error");
+const editingId = Astro.url.searchParams.get("edit");
+const today = new Date().toISOString().slice(0, 10);
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: entries } = supabase
+  ? await supabase
+      .from("body_measurements")
+      .select("id, weight, waist, chest, hips, arms, thighs, logged_at")
+      .order("logged_at", { ascending: false })
+      .order("created_at", { ascending: false })
+  : { data: null };
+
+const entriesByDate = new Map<string, NonNullable<typeof entries>>();
+for (const entry of entries ?? []) {
+  const dayEntries = entriesByDate.get(entry.logged_at) ?? [];
+  dayEntries.push(entry);
+  entriesByDate.set(entry.logged_at, dayEntries);
+}
+
+const circumferenceFields = [
+  { key: "waist", label: "Waist" },
+  { key: "chest", label: "Chest" },
+  { key: "hips", label: "Hips" },
+  { key: "arms", label: "Arms" },
+  { key: "thighs", label: "Thighs" },
+] as const;
+---
+
+<Layout title="Measurements">
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <a href="/dashboard" class="text-sm text-blue-100/70 hover:underline">← Back to dashboard</a>
+
+      <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Log measurement</h2>
+
+        <form method="POST" action="/api/measurements" class="flex flex-wrap items-end gap-3">
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="weight">Weight (kg)</Label>
+            <Input id="weight" name="weight" type="number" step="0.1" min="0.1" required />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="waist">Waist (cm)</Label>
+            <Input id="waist" name="waist" type="number" step="0.1" min="0.1" />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="chest">Chest (cm)</Label>
+            <Input id="chest" name="chest" type="number" step="0.1" min="0.1" />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="hips">Hips (cm)</Label>
+            <Input id="hips" name="hips" type="number" step="0.1" min="0.1" />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="arms">Arms (cm)</Label>
+            <Input id="arms" name="arms" type="number" step="0.1" min="0.1" />
+          </div>
+          <div class="w-24 space-y-1.5">
+            <Label htmlFor="thighs">Thighs (cm)</Label>
+            <Input id="thighs" name="thighs" type="number" step="0.1" min="0.1" />
+          </div>
+          <div class="w-40 space-y-1.5">
+            <Label htmlFor="logged_at">Date</Label>
+            <Input id="logged_at" name="logged_at" type="date" value={today} required />
+          </div>
+          <Button type="submit">Log</Button>
+        </form>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">History</h2>
+
+        {
+          entriesByDate.size > 0 ? (
+            <div class="space-y-6">
+              {[...entriesByDate.entries()].map(([date, dayEntries]) => (
+                <div>
+                  <h3 class="mb-2 text-sm font-semibold text-blue-100/70">{date}</h3>
+                  <div class="space-y-3">
+                    {dayEntries.map((entry) =>
+                      entry.id === editingId ? (
+                        <form
+                          method="POST"
+                          action={`/api/measurements/${entry.id}/update`}
+                          class="flex flex-wrap items-end gap-3 rounded-xl border border-white/10 bg-white/5 p-3"
+                        >
+                          <div class="w-24 space-y-1.5">
+                            <Label htmlFor={`edit-weight-${entry.id}`}>Weight (kg)</Label>
+                            <Input
+                              id={`edit-weight-${entry.id}`}
+                              name="weight"
+                              type="number"
+                              step="0.1"
+                              min="0.1"
+                              value={entry.weight}
+                              required
+                            />
+                          </div>
+                          {circumferenceFields.map((field) => (
+                            <div class="w-24 space-y-1.5">
+                              <Label htmlFor={`edit-${field.key}-${entry.id}`}>{field.label} (cm)</Label>
+                              <Input
+                                id={`edit-${field.key}-${entry.id}`}
+                                name={field.key}
+                                type="number"
+                                step="0.1"
+                                min="0.1"
+                                value={entry[field.key] ?? ""}
+                              />
+                            </div>
+                          ))}
+                          <div class="w-40 space-y-1.5">
+                            <Label htmlFor={`edit-date-${entry.id}`}>Date</Label>
+                            <Input
+                              id={`edit-date-${entry.id}`}
+                              name="logged_at"
+                              type="date"
+                              value={entry.logged_at}
+                              required
+                            />
+                          </div>
+                          <Button type="submit" variant="secondary">
+                            Save
+                          </Button>
+                          <a href="/dashboard/measurements" class="text-sm text-blue-100/70 hover:underline">
+                            Cancel
+                          </a>
+                        </form>
+                      ) : (
+                        <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                          <div>
+                            <p class="font-medium">{entry.weight} kg</p>
+                            {circumferenceFields.some((field) => entry[field.key] !== null) && (
+                              <p class="text-sm text-blue-100/70">
+                                {circumferenceFields
+                                  .filter((field) => entry[field.key] !== null)
+                                  .map((field) => `${field.label}: ${entry[field.key]}cm`)
+                                  .join(" · ")}
+                              </p>
+                            )}
+                          </div>
+                          <div class="flex items-center gap-3">
+                            <a
+                              href={`/dashboard/measurements?edit=${entry.id}`}
+                              class="text-sm text-blue-100/70 hover:underline"
+                            >
+                              Edit
+                            </a>
+                            <DeleteConfirmButton
+                              client:load
+                              action={`/api/measurements/${entry.id}/delete`}
+                              itemLabel={`${entry.weight} kg`}
+                            />
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">No measurements yet. Log one above to get started.</p>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</Layout>
