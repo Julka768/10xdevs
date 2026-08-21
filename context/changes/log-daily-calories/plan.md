@@ -239,13 +239,13 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [x] 3.1 Type check passes
-- [x] 3.2 Linting passes
+- [x] 3.1 Type check passes — 5c4e43d
+- [x] 3.2 Linting passes — 5c4e43d
 
 #### Manual
 
-- [x] 3.3 Nav link navigates to `/dashboard/calories`
-- [x] 3.4 Logging an entry shows it grouped under today's date with a correct total
-- [x] 3.5 A second same-date entry updates the group's total correctly
-- [x] 3.6 Inline edit and delete work without navigating away
-- [x] 3.7 A second user sees no entries from the first user's account
+- [x] 3.3 Nav link navigates to `/dashboard/calories` — 5c4e43d
+- [x] 3.4 Logging an entry shows it grouped under today's date with a correct total — 5c4e43d
+- [x] 3.5 A second same-date entry updates the group's total correctly — 5c4e43d
+- [x] 3.6 Inline edit and delete work without navigating away — 5c4e43d
+- [x] 3.7 A second user sees no entries from the first user's account — 5c4e43d
