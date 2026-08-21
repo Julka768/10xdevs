@@ -211,9 +211,9 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly against local Supabase
-- [ ] 1.2 Type check passes
-- [ ] 1.3 Linting passes
+- [x] 1.1 Migration applies cleanly against local Supabase
+- [x] 1.2 Type check passes
+- [x] 1.3 Linting passes
 
 #### Manual
 
