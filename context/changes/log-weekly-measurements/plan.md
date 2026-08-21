@@ -4,6 +4,8 @@
 
 Add a `body_measurements` domain table and the create/edit/delete/view flow for it, so a user can log their weight (required) plus optional body circumferences (waist, chest, hips, arms, thighs) on a self-paced weekly cadence. This closes FR-007 and is the last data-producing prerequisite for the future weekly report (S-06/FR-008).
 
+**Extension (Phases 4-6, added after Phases 1-3 shipped):** manual testing of the Phase 1-3 baseline surfaced a real scope gap — the user also wants the ability to add their own custom measurement types (and rename/delete them), beyond the 6 built-in fields. Phases 4-6 add this additively, without reworking the already-shipped fixed-column schema or its API/UI.
+
 ## Current State Analysis
 
 Three domain-logging slices already exist and establish a consistent, reusable pattern: `calorie_logs` (simple, full-CRUD, single required numeric field), `body_composition_goals` (append-only, single enum field), and `workout_logs` (full-CRUD, multiple required numeric fields, richer RLS). `calorie_logs` is the closest analog to this slice — same cadence philosophy (no enforcement), same CRUD shape, same date-CHECK pattern. This slice's only real departure from precedent is the number/optionality of numeric fields and the resulting need to distinguish "not provided" from "explicitly cleared" during edits, which no prior slice had to handle since every existing form field is required.
@@ -16,6 +18,7 @@ A logged-in user can, from `/dashboard`:
 - See a "latest measurement" teaser (weight + date, or "not logged yet") and a nav link to `/dashboard/measurements`.
 - On `/dashboard/measurements`: submit a new entry (weight required; waist/chest/hips/arms/thighs optional, in kg/cm) for any date up to and including today; see their full history grouped by exact logged date, newest first; edit or delete any of their own entries inline.
 - Never see another user's measurement data, enforced at the RLS layer (verified manually with two seeded users, per the established pattern).
+- Add, rename, and delete their own custom measurement types (up to 10), and see values for those types alongside the 6 built-in fields everywhere the built-ins appear (log form, edit form, history).
 
 **Verification**: `npx supabase db reset` applies cleanly, `npm run build` and `npm run lint` pass, and the 13-ish manual checks in Progress below are confirmed live in-browser.
 
@@ -33,7 +36,10 @@ A logged-in user can, from `/dashboard`:
 - No cadence enforcement — any number of entries per week is allowed, matching `calorie_logs`' precedent. "Weekly" is a UI/usage convention, not a database constraint.
 - No week-boundary/ISO-week bucketing logic or `date-utils.ts` helper — deferred entirely to the future weekly-report slice (S-06), which doesn't exist yet and shouldn't be pre-built speculatively here.
 - No unit selection (imperial/metric toggle) — everything is stored and displayed in kg/cm, no conversion logic, matching the app's existing lack of any i18n/unit handling.
-- No user-defined custom measurement fields — the field set (weight, waist, chest, hips, arms, thighs) is fixed by this plan, not user-configurable.
+- ~~No user-defined custom measurement fields~~ — superseded by Phases 4-6 (see extension note in Overview). The 6 built-in fields (weight, waist, chest, hips, arms, thighs) remain fixed columns with fixed names; custom types are strictly additive.
+- No renaming of the 6 built-in fields — only user-added custom types can be renamed, per explicit user decision during the Phase 4-6 planning round.
+- No promoting weight (or any built-in) into the flexible type system — weight stays a required, fixed column exactly as shipped in Phase 1.
+- No snapshot/preservation of a custom type's logged values after the type itself is deleted — deleting a `measurement_types` row cascades and removes all its `measurement_values` rows, matching the simplest-possible-cascade precedent (no "preserve history" requirement was raised for this, unlike `workout_logs`' exercise-deletion snapshot).
 - No pagination on the history list — matches the existing gap already accepted in `calorie_logs` and `dashboard/plans/[id].astro` (noted, not fixed, in `log-daily-calories`'s impl-review F4).
 - No changes to `dashboard/plans/[id].astro`, `calorie_logs`, or any other existing table/route beyond the new nav link and teaser card on `dashboard.astro`.
 
@@ -57,6 +63,14 @@ const optionalMeasurement = z.preprocess(
 ```
 
 Apply this to `waist`, `chest`, `hips`, `arms`, `thighs`. `weight` stays a plain required `z.coerce.number().positive()`, matching the `calories` field precedent.
+
+### FK-ownership validation in `measurement_values` RLS (Phase 4)
+
+Unlike every other table in this plan, `measurement_values` rows reference two other user-owned tables (`body_measurements` via `measurement_id`, `measurement_types` via `type_id`). A plain `auth.uid() = user_id` insert policy is not enough here: a malicious request could submit its own `user_id` alongside another user's `measurement_id` or `type_id`, silently attaching a value to someone else's entry or type. `workout_logs` already solved this exact problem for `plan_id`/`exercise_id` with `exists` subqueries in its insert policy (`supabase/migrations/20260703161941_create_workout_logs_schema.sql`) — replicate that shape here rather than relying on `auth.uid() = user_id` alone.
+
+### Upsert-or-delete semantics for custom values (Phase 5)
+
+Custom-type values aren't columns that can hold `null` — a "cleared" custom field means the corresponding `measurement_values` row should not exist at all. So the create/update routes must, per submitted custom type: **upsert** (insert or update) when a non-blank value is submitted, and **delete** the row (if one exists) when the field is blank. This is a different mechanism from the Phase 2 null-clearing pattern (which relies on nullable columns) — there is no column here to null out.
 
 ## Phase 1: Data foundation — `body_measurements` schema
 
@@ -198,6 +212,131 @@ Add the dashboard sub-page (form + grouped history + inline edit/delete), wire i
 
 ---
 
+## Phase 4: Data foundation — custom measurement types
+
+### Overview
+
+Add `measurement_types` (a user-owned catalog of custom field names) and `measurement_values` (the per-entry values for those types), additively alongside the existing fixed-column `body_measurements` table. Update `database.types.ts` accordingly.
+
+### Changes Required:
+
+#### 1. Migration: `measurement_types` and `measurement_values` schema
+
+**File**: `supabase/migrations/20260821160000_create_measurement_types_schema.sql`
+
+**Intent**: Let each user define their own named measurement types, and store per-entry values against those types, without touching the Phase 1 `body_measurements` schema.
+
+**Contract**: `measurement_types`: `id uuid pk`, `user_id uuid not null references auth.users(id) on delete cascade`, `name text not null check (length(trim(name)) > 0)`, `created_at timestamptz not null default now()`. Index on `user_id`. Plain `grant select, insert, update, delete ... to authenticated`. Four RLS policies (`_select_own`/`_insert_own`/`_update_own`/`_delete_own`), all `auth.uid() = user_id` — same shape as `body_measurements`.
+
+`measurement_values`: `id uuid pk`, `user_id uuid not null references auth.users(id) on delete cascade`, `measurement_id uuid not null references public.body_measurements(id) on delete cascade`, `type_id uuid not null references public.measurement_types(id) on delete cascade`, `value numeric(5,2) not null check (value > 0)`, `created_at timestamptz not null default now()`, `unique (measurement_id, type_id)` (one value per type per entry). Indexes on `user_id` and `measurement_id`. Plain grant, same 4-policy RLS shape for select/update/delete, **but** the insert (and update) policy's `with check` must also verify `measurement_id` and `type_id` belong to the same `auth.uid()`, per the Critical Implementation Details note above — replicate `workout_logs`' `exists`-subquery insert-policy shape (`supabase/migrations/20260703161941_create_workout_logs_schema.sql:31-46`), checking against `body_measurements` and `measurement_types` instead of `training_plans`/`exercises`.
+
+#### 2. `database.types.ts` entries
+
+**File**: `src/lib/database.types.ts`
+
+**Intent**: Type the two new tables so later phases' Supabase calls are type-checked.
+
+**Contract**: Insert `measurement_types` and `measurement_values` alphabetically between `exercises` and `training_plans` (`t` < `v`, so `measurement_types` precedes `measurement_values`). Both need `Relationships` arrays populated with their FK objects (`measurement_values` has two: `measurement_id` → `body_measurements`, `type_id` → `measurement_types`), following the `workout_logs` `Relationships` shape as the template for a multi-FK table.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Migration applies cleanly: `npx supabase db reset`
+- Build passes: `npm run build`
+- Lint passes: `npm run lint`
+
+#### Manual Verification:
+
+- User A cannot insert a `measurement_values` row pointing at user B's `measurement_id` or `type_id`, even when `user_id` is set to A's own id.
+- Deleting a `measurement_types` row cascades and removes its `measurement_values` rows.
+- Two values for the same `(measurement_id, type_id)` pair are rejected by the unique constraint.
+
+---
+
+## Phase 5: API routes — manage custom types, extend measurement create/update
+
+### Overview
+
+Add CRUD routes for `measurement_types`, and extend the existing `/api/measurements` create/update routes to upsert-or-delete `measurement_values` rows for whichever custom types were submitted.
+
+### Changes Required:
+
+#### 1. Validation schema addition
+
+**File**: `src/lib/validation/measurements.ts`
+
+**Intent**: Validate a custom type's name on create/rename, and validate an individual custom value the same way an optional built-in field is validated.
+
+**Contract**: Export `measurementTypeInputSchema = z.object({ name: z.string().trim().min(1) })`. Export a single-field validator (reuse the existing `optionalMeasurement` shape from Critical Implementation Details) for validating one custom value at a time, since custom fields are keyed by dynamic type IDs rather than fixed object keys.
+
+#### 2. Custom type CRUD routes
+
+**Files**: `src/pages/api/measurement-types/index.ts` (create), `src/pages/api/measurement-types/[id]/update.ts` (rename), `src/pages/api/measurement-types/[id]/delete.ts` (delete)
+
+**Intent**: Let a user add, rename, and delete their own custom measurement types.
+
+**Contract**: Same shape as the `calories` route trio (auth check → parse → Supabase-configured check → mutate → redirect to `/dashboard/measurements`, `?error=` on failure). The create route additionally counts the user's existing `measurement_types` rows first and rejects with an error redirect (`"You can only add up to 10 custom measurement types"`) if the count is already 10 — enforced in the route, not the database (no other table in this codebase uses a DB-level row-count constraint or trigger).
+
+#### 3. Extend measurement create/update routes
+
+**Files**: `src/pages/api/measurements/index.ts`, `src/pages/api/measurements/[id]/update.ts`
+
+**Intent**: After the existing `body_measurements` insert/update succeeds, process any submitted custom-type fields (form field names `custom_<type_id>`) against the user's own `measurement_types`, upserting or deleting `measurement_values` rows per the Critical Implementation Details note above.
+
+**Contract**: Fetch the user's `measurement_types` (id, name) first, so only known-owned type IDs are processed (ignore any `custom_<type_id>` field whose `type_id` isn't in that set — defends against a forged field name). For each owned type: blank/missing submitted value → delete any existing `measurement_values` row for `(measurement_id, type_id)`; non-blank valid value → attempt `.update({ value }).eq("measurement_id", measurementId).eq("type_id", typeId)` first, and `.insert({ measurement_id, type_id, value, user_id })` only if that update affected zero rows. **Do not use `.upsert()` here** — Phase 4's `measurement_values` update GRANT is column-scoped to `value` only (mirroring `workout_logs`' immutable-columns pattern), and Supabase's upsert emits an `ON CONFLICT DO UPDATE SET` clause covering every column in the payload (including `measurement_id`/`type_id`/`user_id`), which Postgres rejects against a column-scoped grant even when those values are unchanged. The explicit update-then-insert-if-absent avoids ever referencing those columns in an UPDATE. On the create route, `measurement_id` is the newly-inserted `body_measurements` row's `id`.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Build passes: `npm run build`
+- Lint passes: `npm run lint`
+
+#### Manual Verification:
+
+- Adding an 11th custom type is rejected with the limit error.
+- Renaming a custom type updates its label without affecting already-logged values.
+- Deleting a custom type removes it from the log form and its historical values disappear from history.
+- Logging an entry with a value for a custom type creates the corresponding `measurement_values` row.
+- Editing an entry to blank out a previously-set custom value deletes that `measurement_values` row (not left stale).
+- A forged `custom_<foreign-type-id>` field in the form POST is silently ignored, not stored.
+
+---
+
+## Phase 6: UI — manage custom types, dynamic fields in log form and history
+
+### Overview
+
+Add a small "your custom measurement types" management panel to `/dashboard/measurements` (add/rename/delete), and render one input per custom type in the log/edit forms and history display, alongside the existing 6 built-in fields.
+
+### Changes Required:
+
+#### 1. Custom-types management panel + dynamic form fields
+
+**File**: `src/pages/dashboard/measurements/index.astro`
+
+**Intent**: Let the user manage their custom types and fill in values for them when logging or editing an entry, and see those values in history.
+
+**Contract**: Frontmatter fetches the user's `measurement_types` (ordered by `created_at`) and, for history rendering, their `measurement_values` joined/grouped by `measurement_id`. Management panel: a list of existing custom types, each with an inline rename form (`?edit_type=<id>` toggle, same pattern as entry inline-edit) posting to `/api/measurement-types/[id]/update`, and a `DeleteConfirmButton` posting to `/api/measurement-types/[id]/delete`; plus an "Add type" form (name input) posting to `/api/measurement-types`. Log form: after the 5 built-in optional fields, render one additional optional number input per custom type, `name={`custom_${type.id}`}`, labeled with `type.name`. Edit form: same additional inputs, prefilled from that entry's `measurement_values` (blank if no value exists for that type). History rows: alongside the existing built-in-value line, append any custom-type values in the same `"Label: value"` joined-string style.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Build passes: `npm run build`
+- Lint passes: `npm run lint`
+
+#### Manual Verification:
+
+- Adding a custom type makes a new input appear in the log form immediately (after page reload/redirect).
+- Renaming a custom type updates its label everywhere it appears (form, history) without needing to re-log anything.
+- Deleting a custom type removes its input from the form and its values from history.
+- Logging and editing entries with custom values round-trips correctly through the UI.
+- A second user never sees the first user's custom types or values.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -223,7 +362,7 @@ None beyond the existing app-wide pattern — small per-user row counts, no pagi
 
 ## Migration Notes
 
-New table, no existing data to migrate.
+New tables, no existing data to migrate. Phases 4-6 are purely additive on top of Phases 1-3 — no existing `body_measurements` rows or columns are altered.
 
 ## References
 
@@ -270,13 +409,58 @@ New table, no existing data to migrate.
 
 #### Automated
 
-- [x] 3.1 Build passes: `npm run build`
-- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Build passes: `npm run build` — 5ecf902
+- [x] 3.2 Lint passes: `npm run lint` — 5ecf902
 
 #### Manual
 
-- [x] 3.3 Dashboard teaser shows "Not logged yet" then correct latest entry
-- [x] 3.4 Nav link navigates to `/dashboard/measurements`
-- [x] 3.5 Same-day entries grouped under one heading
-- [x] 3.6 Cross-user isolation verified on page and teaser
-- [x] 3.7 Inline edit prefill/cancel behaves correctly
+- [x] 3.3 Dashboard teaser shows "Not logged yet" then correct latest entry — 5ecf902
+- [x] 3.4 Nav link navigates to `/dashboard/measurements` — 5ecf902
+- [x] 3.5 Same-day entries grouped under one heading — 5ecf902
+- [x] 3.6 Cross-user isolation verified on page and teaser — 5ecf902
+- [x] 3.7 Inline edit prefill/cancel behaves correctly — 5ecf902
+
+### Phase 4: Data foundation — custom measurement types
+
+#### Automated
+
+- [x] 4.1 Migration applies cleanly: `npx supabase db reset`
+- [x] 4.2 Build passes: `npm run build`
+- [x] 4.3 Lint passes: `npm run lint`
+
+#### Manual
+
+- [ ] 4.4 Cross-user FK-forgery insert into `measurement_values` rejected
+- [ ] 4.5 Deleting a `measurement_types` row cascades to its `measurement_values`
+- [ ] 4.6 Duplicate `(measurement_id, type_id)` value rejected by unique constraint
+
+### Phase 5: API routes — manage custom types, extend measurement create/update
+
+#### Automated
+
+- [ ] 5.1 Build passes: `npm run build`
+- [ ] 5.2 Lint passes: `npm run lint`
+
+#### Manual
+
+- [ ] 5.3 11th custom type rejected with limit error
+- [ ] 5.4 Renaming a custom type doesn't affect existing values
+- [ ] 5.5 Deleting a custom type removes it from the form and its historical values
+- [ ] 5.6 Logging a custom value creates a `measurement_values` row
+- [ ] 5.7 Clearing a custom value on edit deletes its row
+- [ ] 5.8 Forged foreign `custom_<type-id>` field is ignored
+
+### Phase 6: UI — manage custom types, dynamic fields in log form and history
+
+#### Automated
+
+- [ ] 6.1 Build passes: `npm run build`
+- [ ] 6.2 Lint passes: `npm run lint`
+
+#### Manual
+
+- [ ] 6.3 Adding a custom type shows a new input in the log form
+- [ ] 6.4 Renaming updates the label everywhere without re-logging
+- [ ] 6.5 Deleting removes the input and its history values
+- [ ] 6.6 Logging/editing custom values round-trips correctly through the UI
+- [ ] 6.7 Cross-user isolation verified for custom types and values

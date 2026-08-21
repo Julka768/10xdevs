@@ -145,6 +145,69 @@ export interface Database {
           },
         ];
       };
+      measurement_types: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      measurement_values: {
+        Row: {
+          created_at: string;
+          id: string;
+          measurement_id: string;
+          type_id: string;
+          user_id: string;
+          value: number;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          measurement_id: string;
+          type_id: string;
+          user_id: string;
+          value: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          measurement_id?: string;
+          type_id?: string;
+          user_id?: string;
+          value?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "measurement_values_measurement_id_fkey";
+            columns: ["measurement_id"];
+            isOneToOne: false;
+            referencedRelation: "body_measurements";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "measurement_values_type_id_fkey";
+            columns: ["type_id"];
+            isOneToOne: false;
+            referencedRelation: "measurement_types";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       training_plans: {
         Row: {
           created_at: string;
