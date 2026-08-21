@@ -454,13 +454,13 @@ New tables, no existing data to migrate. Phases 4-6 are purely additive on top o
 
 #### Automated
 
-- [x] 6.1 Build passes: `npm run build`
-- [x] 6.2 Lint passes: `npm run lint`
+- [x] 6.1 Build passes: `npm run build` — cdfe8e1
+- [x] 6.2 Lint passes: `npm run lint` — cdfe8e1
 
 #### Manual
 
-- [x] 6.3 Adding a custom type shows a new input in the log form
-- [x] 6.4 Renaming updates the label everywhere without re-logging
-- [x] 6.5 Deleting removes the input and its history values
-- [x] 6.6 Logging/editing custom values round-trips correctly through the UI
-- [x] 6.7 Cross-user isolation verified for custom types and values
+- [x] 6.3 Adding a custom type shows a new input in the log form — cdfe8e1
+- [x] 6.4 Renaming updates the label everywhere without re-logging — cdfe8e1
+- [x] 6.5 Deleting removes the input and its history values — cdfe8e1
+- [x] 6.6 Logging/editing custom values round-trips correctly through the UI — cdfe8e1
+- [x] 6.7 Cross-user isolation verified for custom types and values — cdfe8e1

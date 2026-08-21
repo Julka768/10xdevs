@@ -1,7 +1,7 @@
 ---
 change_id: log-weekly-measurements
 title: Log weekly body measurements
-status: implementing
+status: implemented
 created: 2026-08-21
 updated: 2026-08-21
 archived_at: null
