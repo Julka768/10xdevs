@@ -159,7 +159,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue closed                  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | done                   | Implemented; issue closed                  |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | done                   | Implemented; issue closed                  |
-| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | no                     | Waiting on S-02/S-03/S-04/S-05 (#10-13)    |
+| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | code-ready             | #10-13 all closed; still waiting on one full prior week of real logged data per PRD Business Logic before shipping is meaningful |
 
 Migrated to GitHub Issues on `Julka768/10xdevs`, milestone [`MVP roadmap`](https://github.com/Julka768/10xdevs/milestone/1), on 2026-07-02.
 
