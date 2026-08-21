@@ -3,7 +3,7 @@ project: "10xDevBodyMetrics"
 version: 1
 status: draft
 created: 2026-07-02
-updated: 2026-07-03
+updated: 2026-07-04
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -31,8 +31,8 @@ Gym-goers currently track lifting, body measurements, and calories in separate s
 | ---- | ----------------------------------- | ------------------------------------------------------------------ | ----------------------- | --------------------- | -------- |
 | F-01 | training-plan-data-foundation       | (foundation) Supabase schema + RLS pattern for plans/exercises     | —                        | FR-002, FR-003         | done     |
 | S-01 | create-and-manage-training-plan     | create, view, edit, and delete exercises in a training plan        | F-01                    | FR-002, FR-003         | done     |
-| S-02 | log-workout-against-plan            | log a workout session (exercise, weight, reps) against their plan  | S-01                    | US-01, FR-001, FR-005  | proposed |
-| S-03 | set-body-composition-goal           | set and edit a body-composition goal at any time                   | —                        | FR-004                 | ready    |
+| S-02 | log-workout-against-plan            | log a workout session (exercise, weight, reps) against their plan  | S-01                    | US-01, FR-001, FR-005  | done     |
+| S-03 | set-body-composition-goal           | set and edit a body-composition goal at any time                   | —                        | FR-004                 | done     |
 | S-04 | log-daily-calories                  | log calories consumed for a given day                              | —                        | FR-006                 | ready    |
 | S-05 | log-weekly-measurements             | log body measurements on a weekly cadence                          | —                        | FR-007                 | ready    |
 | S-06 | weekly-progress-report              | view a weekly report: training volume, measurement deltas, calories vs. goal | S-02, S-03, S-04, S-05  | FR-008                 | proposed |
@@ -99,7 +99,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** This is the north star — the whole "unified tracking" pitch hinges on this flow feeling seamless against the user's own plan, not a generic log.
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: User sets and edits a body-composition goal
 
@@ -111,7 +111,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Low — self-contained entity with no dependency on other domain data; main risk is scope creep beyond "set and edit," which the `speed` goal argues against.
-- **Status:** ready
+- **Status:** done
 
 ### S-04: User logs daily calories
 
@@ -155,8 +155,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | ---------- | ---------------------------------- | ---------------------------------------------------------------- | ---------------------- | ------------------------------------------ |
 | F-01       | training-plan-data-foundation      | [#8](https://github.com/Julka768/10xdevs/issues/8)   | done                   | Implemented; issue closed                  |
 | S-01       | create-and-manage-training-plan    | [#9](https://github.com/Julka768/10xdevs/issues/9)   | done                   | Implemented; issue closed                  |
-| S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | yes                    | S-01 done — north star; run `/10x-plan log-workout-against-plan` |
-| S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | yes                    | Run `/10x-plan set-body-composition-goal`  |
+| S-02       | log-workout-against-plan           | [#10](https://github.com/Julka768/10xdevs/issues/10) | done                   | Implemented; issue closed                  |
+| S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue closed                  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | yes                    | Run `/10x-plan log-daily-calories`         |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | yes                    | Run `/10x-plan log-weekly-measurements`    |
 | S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | no                     | Waiting on S-02/S-03/S-04/S-05 (#10-13)    |
@@ -183,4 +183,6 @@ None — PRD's `## Open Questions` is empty, and no new cross-cutting question s
 
 - **F-01: (foundation) Supabase schema + RLS pattern for plans/exercises** — Implemented 2026-07-03 in `context/changes/training-plan-data-foundation/` (not yet archived). Lesson: pair RLS with explicit GRANTs (see `context/foundation/lessons.md`).
 - **S-01: User creates and manages a training plan** — Implemented 2026-07-03 in `context/changes/create-and-manage-training-plan/` (3 phases: foundation, plans, exercises; not yet archived). Target weight per exercise was deferred — see Parked.
+- **S-02: User logs a workout session against their plan** — Implemented 2026-07-03 in `context/changes/log-workout-against-plan/` (3 phases: data foundation, API routes, UI; impl-reviewed, not yet archived). Nullable `exercise_id` + snapshotted `exercise_name` preserves log history across exercise deletion.
+- **S-03: User sets and edits a body-composition goal** — Implemented 2026-07-04 in `context/changes/set-body-composition-goal/` (3 phases: data foundation, API route, UI; impl-reviewed, not yet archived). Append-only history table with GRANT-enforced no-update/delete; "current goal" is always the latest row per user.
 

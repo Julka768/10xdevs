@@ -1,0 +1,79 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { ServerError } from "@/components/auth/ServerError";
+import { goalLabels } from "@/lib/goal-labels";
+
+const error = Astro.url.searchParams.get("error");
+const editing = Astro.url.searchParams.get("edit") !== null;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: goal } = supabase
+  ? await supabase
+      .from("body_composition_goals")
+      .select("goal_type")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+  : { data: null };
+
+const showForm = !goal || editing;
+---
+
+<Layout title="Body-composition goal">
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <div class="flex items-center justify-between">
+        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Body-composition goal
+        </h1>
+        <a href="/dashboard" class="text-sm text-blue-100/70 hover:underline">Back to dashboard</a>
+      </div>
+
+      <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        {
+          showForm ? (
+            <form method="POST" action="/api/goal/create" class="space-y-4">
+              {!goal && <p class="text-blue-100/70">No goal set yet.</p>}
+              <div class="space-y-2">
+                {Object.entries(goalLabels).map(([value, label]) => (
+                  <label class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
+                    <input
+                      type="radio"
+                      name="goal_type"
+                      value={value}
+                      checked={goal?.goal_type === value}
+                      required
+                      class="size-4 accent-blue-400"
+                    />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+              <div class="flex items-center gap-3">
+                <Button type="submit">Save</Button>
+                {goal && (
+                  <a href="/dashboard/goal" class="text-sm text-blue-100/70 hover:underline">
+                    Cancel
+                  </a>
+                )}
+              </div>
+            </form>
+          ) : (
+            <div class="flex items-center justify-between">
+              <p>
+                Current goal: <span class="font-semibold">{goalLabels[goal.goal_type] ?? goal.goal_type}</span>
+              </p>
+              <a href="/dashboard/goal?edit" class="text-sm text-blue-100/70 hover:underline">
+                Edit
+              </a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</Layout>
