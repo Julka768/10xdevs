@@ -33,9 +33,19 @@ export async function syncCustomMeasurementValues(
       .select();
 
     if (!updated || updated.length === 0) {
-      await supabase
+      const { error: insertError } = await supabase
         .from("measurement_values")
         .insert({ measurement_id: measurementId, type_id: type.id, value, user_id: userId });
+
+      if (insertError?.code === "23505") {
+        // Lost the insert race to a concurrent request for the same (measurement_id,
+        // type_id) — the row now exists, so fall back to last-write-wins via update.
+        await supabase
+          .from("measurement_values")
+          .update({ value })
+          .eq("measurement_id", measurementId)
+          .eq("type_id", type.id);
+      }
     }
   }
 }
