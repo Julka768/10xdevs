@@ -41,6 +41,45 @@ export interface Database {
         };
         Relationships: [];
       };
+      body_measurements: {
+        Row: {
+          arms: number | null;
+          chest: number | null;
+          created_at: string;
+          hips: number | null;
+          id: string;
+          logged_at: string;
+          thighs: number | null;
+          user_id: string;
+          waist: number | null;
+          weight: number;
+        };
+        Insert: {
+          arms?: number | null;
+          chest?: number | null;
+          created_at?: string;
+          hips?: number | null;
+          id?: string;
+          logged_at?: string;
+          thighs?: number | null;
+          user_id: string;
+          waist?: number | null;
+          weight: number;
+        };
+        Update: {
+          arms?: number | null;
+          chest?: number | null;
+          created_at?: string;
+          hips?: number | null;
+          id?: string;
+          logged_at?: string;
+          thighs?: number | null;
+          user_id?: string;
+          waist?: number | null;
+          weight?: number;
+        };
+        Relationships: [];
+      };
       calorie_logs: {
         Row: {
           calories: number;
