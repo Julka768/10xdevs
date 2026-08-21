@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { measurementLogInputSchema } from "@/lib/validation/measurements";
+import { syncCustomMeasurementValues } from "@/lib/measurement-values";
 
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) {
@@ -26,7 +27,7 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/dashboard/measurements?error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("body_measurements")
     .insert({ ...parsed.data, user_id: context.locals.user.id })
     .select()
@@ -35,6 +36,8 @@ export const POST: APIRoute = async (context) => {
   if (error) {
     return context.redirect(`/dashboard/measurements?error=${encodeURIComponent("Could not log measurement")}`);
   }
+
+  await syncCustomMeasurementValues(supabase, context.locals.user.id, data.id, form);
 
   return context.redirect("/dashboard/measurements");
 };

@@ -424,9 +424,9 @@ New tables, no existing data to migrate. Phases 4-6 are purely additive on top o
 
 #### Automated
 
-- [x] 4.1 Migration applies cleanly: `npx supabase db reset`
-- [x] 4.2 Build passes: `npm run build`
-- [x] 4.3 Lint passes: `npm run lint`
+- [x] 4.1 Migration applies cleanly: `npx supabase db reset` — 742ffc6
+- [x] 4.2 Build passes: `npm run build` — 742ffc6
+- [x] 4.3 Lint passes: `npm run lint` — 742ffc6
 
 #### Manual
 
@@ -438,8 +438,8 @@ New tables, no existing data to migrate. Phases 4-6 are purely additive on top o
 
 #### Automated
 
-- [ ] 5.1 Build passes: `npm run build`
-- [ ] 5.2 Lint passes: `npm run lint`
+- [x] 5.1 Build passes: `npm run build`
+- [x] 5.2 Lint passes: `npm run lint`
 
 #### Manual
 

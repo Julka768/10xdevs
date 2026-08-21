@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { measurementLogInputSchema } from "@/lib/validation/measurements";
+import { syncCustomMeasurementValues } from "@/lib/measurement-values";
 
 export const POST: APIRoute = async (context) => {
   const { id } = context.params;
@@ -36,6 +37,8 @@ export const POST: APIRoute = async (context) => {
   if (error || data.length === 0) {
     return context.redirect(`/dashboard/measurements?error=${encodeURIComponent("Log entry not found")}`);
   }
+
+  await syncCustomMeasurementValues(supabase, context.locals.user.id, id, form);
 
   return context.redirect("/dashboard/measurements");
 };
