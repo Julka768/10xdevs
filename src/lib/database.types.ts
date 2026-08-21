@@ -20,6 +20,27 @@ export interface Database {
   };
   public: {
     Tables: {
+      body_composition_goals: {
+        Row: {
+          created_at: string;
+          goal_type: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          goal_type: string;
+          id?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          goal_type?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       calorie_logs: {
         Row: {
           calories: number;
@@ -40,27 +61,6 @@ export interface Database {
           created_at?: string;
           id?: string;
           logged_at?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      body_composition_goals: {
-        Row: {
-          created_at: string;
-          goal_type: string;
-          id: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          goal_type: string;
-          id?: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          goal_type?: string;
-          id?: string;
           user_id?: string;
         };
         Relationships: [];
