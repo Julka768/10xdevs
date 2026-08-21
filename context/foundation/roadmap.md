@@ -35,7 +35,7 @@ Gym-goers currently track lifting, body measurements, and calories in separate s
 | S-03 | set-body-composition-goal           | set and edit a body-composition goal at any time                   | —                        | FR-004                 | done     |
 | S-04 | log-daily-calories                  | log calories consumed for a given day                              | —                        | FR-006                 | done     |
 | S-05 | log-weekly-measurements             | log body measurements on a weekly cadence                          | —                        | FR-007                 | done     |
-| S-06 | weekly-progress-report              | view a weekly report: training volume, measurement deltas, calories vs. goal | S-02, S-03, S-04, S-05  | FR-008                 | proposed |
+| S-06 | weekly-progress-report              | view a weekly report: training volume, measurement deltas, calories vs. goal | S-02, S-03, S-04, S-05  | FR-008                 | ready    |
 
 ## Streams
 
@@ -146,8 +146,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Deliberately sequenced last — it depends on real data existing across four independent logging slices; shipping it earlier would only show empty states and prove nothing.
-- **Status:** proposed
+- **Risk:** Deliberately sequenced last — it depends on real data existing across four independent logging slices; shipping it earlier would only show empty states and prove nothing. Code prerequisites (S-02/S-03/S-04/S-05) are now all shipped; the report computation itself will be built and tested against fixture data rather than waiting on real usage history.
+- **Status:** ready
 
 ## Backlog Handoff
 
@@ -159,7 +159,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue closed                  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | done                   | Implemented; issue closed                  |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | done                   | Implemented; issue closed                  |
-| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | code-ready             | #10-13 all closed; still waiting on one full prior week of real logged data per PRD Business Logic before shipping is meaningful |
+| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | yes                    | Run `/10x-plan weekly-progress-report`; report logic built/tested against fixture data |
 
 Migrated to GitHub Issues on `Julka768/10xdevs`, milestone [`MVP roadmap`](https://github.com/Julka768/10xdevs/milestone/1), on 2026-07-02.
 
