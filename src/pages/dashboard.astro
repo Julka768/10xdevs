@@ -2,6 +2,8 @@
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
 import { goalLabels } from "@/lib/goal-labels";
+import { fetchWeeklyReportData } from "@/lib/fetch-weekly-report";
+import { aggregateTrend } from "@/lib/weekly-report";
 
 const { user } = Astro.locals;
 
@@ -24,6 +26,18 @@ const { data: measurement } = supabase
       .limit(1)
       .maybeSingle()
   : { data: null };
+
+const report = supabase ? await fetchWeeklyReportData(supabase, new Date()) : null;
+const trainingTrend = report ? aggregateTrend(report.volume.map((r) => r.trend)) : null;
+const weightTrend = report ? (report.measurements.find((r) => r.label === "weight")?.trend ?? null) : null;
+const caloriesAligned = report?.calories.aligned ?? null;
+
+function trendSymbol(trend: "up" | "down" | "flat" | null): string {
+  if (trend === "up") return "↑";
+  if (trend === "down") return "↓";
+  if (trend === "flat") return "→";
+  return "—";
+}
 ---
 
 <Layout title="Dashboard">
@@ -45,6 +59,18 @@ const { data: measurement } = supabase
           {measurement ? `${measurement.weight} kg (${measurement.logged_at})` : "Not logged yet"}
         </span>
       </p>
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-blue-100/80">
+        <span>
+          Training: <span class="font-semibold">{trendSymbol(trainingTrend)}</span>
+        </span>
+        <span>
+          Weight: <span class="font-semibold">{trendSymbol(weightTrend)}</span>
+        </span>
+        <span>
+          Calories vs goal:{" "}
+          <span class="font-semibold">{caloriesAligned === null ? "—" : caloriesAligned ? "✓" : "✗"}</span>
+        </span>
+      </div>
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
         <a
           href="/dashboard/plans"
@@ -69,6 +95,12 @@ const { data: measurement } = supabase
           class="inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
         >
           Measurements
+        </a>
+        <a
+          href="/dashboard/report"
+          class="inline-block rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+        >
+          Weekly report
         </a>
       </div>
       <form method="POST" action="/api/auth/signout" class="mt-6">
