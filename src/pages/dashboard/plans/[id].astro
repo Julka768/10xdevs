@@ -63,7 +63,7 @@ for (const log of logs ?? []) {
           <form method="POST" action={`/api/plans/${plan.id}/rename`} class="flex flex-1 items-end gap-3">
             <div class="flex-1 space-y-1.5">
               <Label htmlFor="name">Plan name</Label>
-              <Input id="name" name="name" value={plan.name} required />
+              <Input id="name" name="name" defaultValue={plan.name} required />
             </div>
             <Button type="submit" variant="secondary">Rename</Button>
           </form>
@@ -86,7 +86,7 @@ for (const log of logs ?? []) {
                   >
                     <div class="flex-1 space-y-1.5">
                       <Label htmlFor={`name-${exercise.id}`}>Name</Label>
-                      <Input id={`name-${exercise.id}`} name="name" value={exercise.name} required />
+                      <Input id={`name-${exercise.id}`} name="name" defaultValue={exercise.name} required />
                     </div>
                     <div class="w-24 space-y-1.5">
                       <Label htmlFor={`sets-${exercise.id}`}>Sets</Label>
@@ -95,7 +95,7 @@ for (const log of logs ?? []) {
                         name="target_sets"
                         type="number"
                         min="1"
-                        value={exercise.target_sets}
+                        defaultValue={exercise.target_sets}
                         required
                       />
                     </div>
@@ -106,7 +106,7 @@ for (const log of logs ?? []) {
                         name="target_reps"
                         type="number"
                         min="1"
-                        value={exercise.target_reps}
+                        defaultValue={exercise.target_reps}
                         required
                       />
                     </div>
@@ -177,7 +177,13 @@ for (const log of logs ?? []) {
                     </div>
                     <div class="w-40 space-y-1.5">
                       <Label htmlFor={`log-date-${exercise.id}`}>Date</Label>
-                      <Input id={`log-date-${exercise.id}`} name="logged_at" type="date" value={today} required />
+                      <Input
+                        id={`log-date-${exercise.id}`}
+                        name="logged_at"
+                        type="date"
+                        defaultValue={today}
+                        required
+                      />
                     </div>
                     <Button type="submit">Log</Button>
                     <a href={`/dashboard/plans/${plan.id}`} class="text-sm text-blue-100/70 hover:underline">
@@ -237,7 +243,7 @@ for (const log of logs ?? []) {
                               type="number"
                               step="0.5"
                               min="0"
-                              value={log.weight}
+                              defaultValue={log.weight}
                               required
                             />
                           </div>
@@ -248,7 +254,7 @@ for (const log of logs ?? []) {
                               name="reps"
                               type="number"
                               min="1"
-                              value={log.reps}
+                              defaultValue={log.reps}
                               required
                             />
                           </div>
@@ -259,7 +265,7 @@ for (const log of logs ?? []) {
                               name="sets_completed"
                               type="number"
                               min="1"
-                              value={log.sets_completed}
+                              defaultValue={log.sets_completed}
                               required
                             />
                           </div>
@@ -269,7 +275,7 @@ for (const log of logs ?? []) {
                               id={`edit-date-${log.id}`}
                               name="logged_at"
                               type="date"
-                              value={log.logged_at}
+                              defaultValue={log.logged_at}
                               required
                             />
                           </div>
