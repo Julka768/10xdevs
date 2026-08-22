@@ -151,12 +151,14 @@ export function computeMeasurementDeltas(
     bounds.currentWeekEnd,
   );
   const priorWeight = latestNonNullInRange(measurements, (m) => m.weight, bounds.priorWeekStart, bounds.priorWeekEnd);
-  rows.push({
-    label: "weight",
-    current: currentWeight,
-    prior: priorWeight,
-    trend: compareValues(currentWeight, priorWeight),
-  });
+  if (currentWeight !== null || priorWeight !== null) {
+    rows.push({
+      label: "weight",
+      current: currentWeight,
+      prior: priorWeight,
+      trend: compareValues(currentWeight, priorWeight),
+    });
+  }
 
   for (const field of CIRCUMFERENCE_FIELDS) {
     const getField = (m: BodyMeasurementRow): number | null => m[field];

@@ -275,8 +275,8 @@ None — no schema changes.
 
 #### Manual
 
-- [ ] 2.4 Correct up/down/flat per category with cross-account isolation
-- [ ] 2.5 Per-category empty state independent of other categories
-- [ ] 2.6 Dashboard badges match report page's computed trends
-- [ ] 2.7 Nav link navigates to `/dashboard/report`
-- [ ] 2.8 Fresh account with zero data renders cleanly, no errors
+- [x] 2.4 Correct up/down/flat per category with cross-account isolation — verified 2026-08-22 via real `npm run dev` server + local Supabase, signed in as 3 fixture accounts through the actual `/api/auth/signin` route (browser tool unavailable this session; verified at the HTTP/SSR level instead of visually). Account A (all 3 categories seeded, reusing the plan's own hand-computed fixtures): Bench Press 2500→2750 ↑, Squat 2560→2560 →, Deadlift —→1080 (no prior) —, weight 79.5→79.1 ↓, waist 90→— —, Neck 38→38 →, calories 2000→1800 ↓ aligned with "lose" goal. Account B's data never appeared in Account A's report or vice versa.
+- [x] 2.5 Per-category empty state independent of other categories — verified: Account B (measurements-only data) showed "Not enough workout/calorie data yet" for those two sections while Body measurements rendered normally (weight 70→72 ↑) — confirms per-category independence.
+- [x] 2.6 Dashboard badges match report page's computed trends — verified: Account A badges (Training ↑, Weight ↓, Calories ✓) matched the report; Account B badges (Training —, Weight ↑, Calories —) matched the report.
+- [x] 2.7 Nav link navigates to `/dashboard/report` — verified: `<a href="/dashboard/report">` present and correct in dashboard HTML.
+- [x] 2.8 Fresh account with zero data renders cleanly, no errors — verified: Account C (zero rows in any table) returned 200 with no crash, all three dashboard badges show "—". **Finding (fixed)**: the Body measurements section did NOT show the generic "Not enough measurement data yet" message like the other two sections did — `computeMeasurementDeltas` (`src/lib/weekly-report.ts`) unconditionally pushed a `weight` row even when both `current`/`prior` were null (unlike circumference/custom-type rows, which are skipped when both are null). Fixed 2026-08-22 by gating the `weight` row push on `currentWeight !== null || priorWeight !== null`, matching the circumference-field pattern; added a regression test (`tests/unit/weekly-report.test.ts`, "returns no rows at all when there are zero measurements") and re-verified against a fresh zero-data account through the real dev server — all three sections now show their empty state consistently.

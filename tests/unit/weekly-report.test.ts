@@ -110,6 +110,11 @@ describe("computeMeasurementDeltas", () => {
     // Neck: prior value came from m1 (08-12), current value from m3 (08-19).
     expect(byLabel.get("Neck")).toEqual({ label: "Neck", prior: 38, current: 38, trend: "flat" });
   });
+
+  it("returns no rows at all when there are zero measurements, so the UI can show its empty state", () => {
+    const result = computeMeasurementDeltas([], [], [], bounds);
+    expect(result).toEqual([]);
+  });
 });
 
 describe("computeCalorieAlignment", () => {
