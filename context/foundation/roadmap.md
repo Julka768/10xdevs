@@ -159,7 +159,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue closed                  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | done                   | Implemented; issue closed                  |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | done                   | Implemented; issue closed                  |
-| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | done                   | Implemented; issue closed. Phase 2 browser manual verification still pending. |
+| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | done                   | Implemented; issue closed. Phase 2 manual verification complete 2026-08-22 (surfaced and fixed one empty-state bug, PR #24). |
 
 Migrated to GitHub Issues on `Julka768/10xdevs`, milestone [`MVP roadmap`](https://github.com/Julka768/10xdevs/milestone/1), on 2026-07-02.
 
