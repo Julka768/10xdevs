@@ -12,6 +12,23 @@ function inRange(dateStr: string, start: string, end: string): boolean {
   return dateStr >= start && dateStr <= end;
 }
 
+/**
+ * Reduces multiple trends (e.g. one per exercise) to a single one for a
+ * compact display: whichever of up/down has more votes wins; a tie (including
+ * all-flat, or a mix that cancels out) is "flat". Rows with no trend (no
+ * data) are ignored, not counted as flat.
+ */
+export function aggregateTrend(trends: (TrendDirection | null)[]): TrendDirection | null {
+  const relevant = trends.filter((t): t is TrendDirection => t !== null);
+  if (relevant.length === 0) return null;
+
+  const upCount = relevant.filter((t) => t === "up").length;
+  const downCount = relevant.filter((t) => t === "down").length;
+  if (upCount > downCount) return "up";
+  if (downCount > upCount) return "down";
+  return "flat";
+}
+
 // --- Training volume ---
 
 export interface WorkoutLogRow {

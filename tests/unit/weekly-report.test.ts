@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getWeekBounds } from "@/lib/date-utils";
 import {
+  aggregateTrend,
   computeCalorieAlignment,
   computeMeasurementDeltas,
   computeVolumeComparison,
@@ -145,5 +146,26 @@ describe("computeCalorieAlignment", () => {
     const logs = priorDays([2000]);
     const result = computeCalorieAlignment(logs, "lose", bounds);
     expect(result).toEqual({ priorAvgDaily: 2000, currentAvgDaily: null, trend: null, aligned: null });
+  });
+});
+
+describe("aggregateTrend", () => {
+  it("picks the trend with more votes", () => {
+    expect(aggregateTrend(["up", "up", "down"])).toBe("up");
+    expect(aggregateTrend(["down", "down", "up"])).toBe("down");
+  });
+
+  it("is flat on a tie, including an all-flat set", () => {
+    expect(aggregateTrend(["up", "down"])).toBe("flat");
+    expect(aggregateTrend(["flat", "flat"])).toBe("flat");
+  });
+
+  it("ignores no-data entries rather than counting them as flat", () => {
+    expect(aggregateTrend([null, null, "up"])).toBe("up");
+  });
+
+  it("is null when there is no trend data at all", () => {
+    expect(aggregateTrend([null, null])).toBeNull();
+    expect(aggregateTrend([])).toBeNull();
   });
 });

@@ -1,0 +1,106 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { fetchWeeklyReportData } from "@/lib/fetch-weekly-report";
+import { ServerError } from "@/components/auth/ServerError";
+import type { TrendDirection } from "@/lib/weekly-report";
+
+const error = Astro.url.searchParams.get("error");
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const report = supabase ? await fetchWeeklyReportData(supabase, new Date()) : null;
+
+function trendSymbol(trend: TrendDirection | null): string {
+  if (trend === "up") return "↑";
+  if (trend === "down") return "↓";
+  if (trend === "flat") return "→";
+  return "—";
+}
+---
+
+<Layout title="Weekly Report">
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <a href="/dashboard" class="text-sm text-blue-100/70 hover:underline">← Back to dashboard</a>
+
+      <ServerError message={error} />
+
+      <div>
+        <h1 class="text-2xl font-semibold">Weekly report</h1>
+        {
+          report && (
+            <p class="mt-1 text-sm text-blue-100/70">
+              {report.bounds.currentWeekStart} – {report.bounds.currentWeekEnd} vs. {report.bounds.priorWeekStart} –{" "}
+              {report.bounds.priorWeekEnd}
+            </p>
+          )
+        }
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Training volume</h2>
+        {
+          report && report.volume.length > 0 ? (
+            <div class="space-y-2">
+              {report.volume.map((row) => (
+                <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                  <p class="font-medium">{row.exerciseName}</p>
+                  <p class="text-sm text-blue-100/80">
+                    {row.priorVolume ?? "—"} → {row.currentVolume ?? "—"}{" "}
+                    <span class="ml-1">{trendSymbol(row.trend)}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">Not enough workout data yet for a comparison.</p>
+          )
+        }
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Body measurements</h2>
+        {
+          report && report.measurements.length > 0 ? (
+            <div class="space-y-2">
+              {report.measurements.map((row) => (
+                <div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3">
+                  <p class="font-medium capitalize">{row.label}</p>
+                  <p class="text-sm text-blue-100/80">
+                    {row.prior ?? "—"} → {row.current ?? "—"} <span class="ml-1">{trendSymbol(row.trend)}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">Not enough measurement data yet for a comparison.</p>
+          )
+        }
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-xl font-semibold">Calories vs. goal</h2>
+        {
+          report && (report.calories.currentAvgDaily !== null || report.calories.priorAvgDaily !== null) ? (
+            <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+              <p class="text-sm text-blue-100/80">
+                {report.calories.priorAvgDaily?.toFixed(0) ?? "—"} →{" "}
+                {report.calories.currentAvgDaily?.toFixed(0) ?? "—"} kcal/day{" "}
+                <span class="ml-1">{trendSymbol(report.calories.trend)}</span>
+              </p>
+              <p class="mt-1 text-sm font-medium">
+                {report.calories.aligned === null
+                  ? "Alignment with goal: unknown (set a goal to see this)"
+                  : report.calories.aligned
+                    ? "✓ Aligned with your goal"
+                    : "✗ Not aligned with your goal"}
+              </p>
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">Not enough calorie data yet for a comparison.</p>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</Layout>

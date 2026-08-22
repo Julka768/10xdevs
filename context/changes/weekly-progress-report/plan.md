@@ -206,6 +206,7 @@ Query the four source tables for the two-week date range, call Phase 1's functio
 
 - Build passes: `npm run build`
 - Lint passes: `npm run lint`
+- Unit tests pass: `npm run test:unit` (extended in this phase with `aggregateTrend` coverage for the dashboard badges)
 
 #### Manual Verification:
 
@@ -260,21 +261,22 @@ None — no schema changes.
 
 #### Automated
 
-- [x] 1.1 Build passes: `npm run build`
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 Unit tests pass: `npm run test:unit`
+- [x] 1.1 Build passes: `npm run build` — 68d1978
+- [x] 1.2 Lint passes: `npm run lint` — 68d1978
+- [x] 1.3 Unit tests pass: `npm run test:unit` — 68d1978
 
 ### Phase 2: UI — report page and dashboard trend badges
 
 #### Automated
 
-- [ ] 2.1 Build passes: `npm run build`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Unit tests pass: `npm run test:unit` (extended in this phase with `aggregateTrend` coverage for the dashboard badges)
 
 #### Manual
 
-- [ ] 2.3 Correct up/down/flat per category with cross-account isolation
-- [ ] 2.4 Per-category empty state independent of other categories
-- [ ] 2.5 Dashboard badges match report page's computed trends
-- [ ] 2.6 Nav link navigates to `/dashboard/report`
-- [ ] 2.7 Fresh account with zero data renders cleanly, no errors
+- [ ] 2.4 Correct up/down/flat per category with cross-account isolation
+- [ ] 2.5 Per-category empty state independent of other categories
+- [ ] 2.6 Dashboard badges match report page's computed trends
+- [ ] 2.7 Nav link navigates to `/dashboard/report`
+- [ ] 2.8 Fresh account with zero data renders cleanly, no errors
