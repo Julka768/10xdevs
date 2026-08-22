@@ -45,7 +45,7 @@ for (const entry of entries ?? []) {
           </div>
           <div class="w-40 space-y-1.5">
             <Label htmlFor="logged_at">Date</Label>
-            <Input id="logged_at" name="logged_at" type="date" value={today} required />
+            <Input id="logged_at" name="logged_at" type="date" defaultValue={today} required />
           </div>
           <Button type="submit">Log</Button>
         </form>
@@ -80,7 +80,7 @@ for (const entry of entries ?? []) {
                                 name="calories"
                                 type="number"
                                 min="1"
-                                value={entry.calories}
+                                defaultValue={entry.calories}
                                 required
                               />
                             </div>
@@ -90,7 +90,7 @@ for (const entry of entries ?? []) {
                                 id={`edit-date-${entry.id}`}
                                 name="logged_at"
                                 type="date"
-                                value={entry.logged_at}
+                                defaultValue={entry.logged_at}
                                 required
                               />
                             </div>
