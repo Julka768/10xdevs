@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-07-04 (Phase 1 complete)
+> Last updated: 2026-08-22 (Phase 2 complete)
 
 ## 1. Strategy
 
@@ -66,7 +66,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | Critical-path integrity & authorization | Bootstrap the integration test runner + a two-seeded-user Supabase fixture harness, then prove ownership/attribution/cascade/authorization correctness across every existing and upcoming domain table | #1, #2, #3, #4 | integration | complete | `context/changes/testing-critical-path-integrity/` |
-| 2 | Weekly report correctness | Prove FR-008's volume-trend/measurement-delta/calorie-vs-goal computation against independently hand-computed fixture data, once S-06 is built | #5 | unit + integration | not started | — |
+| 2 | Weekly report correctness | Prove FR-008's volume-trend/measurement-delta/calorie-vs-goal computation against independently hand-computed fixture data, once S-06 is built | #5 | unit | complete | `context/changes/weekly-progress-report/` (folded into S-06's own plan rather than its own change folder — see note below) |
 | 3 | Date/timezone boundary hardening | Unit-test the date/week-boundary logic shared across logging and reporting, parametrized across timezones | #6 | unit | not started | — |
 | 4 | Quality-gates wiring | Require the new integration/unit suites in CI alongside the existing lint+build gate | cross-cutting | gates | not started | — |
 
@@ -79,7 +79,7 @@ The classic test base for this project. AI-native tools (if any) carry a
 
 | Layer | Tool | Version | Notes |
 |---|---|---|---|
-| unit + integration | none yet — see Phase 1 | — | Vitest is the conventional pairing for Astro/Vite-based projects; exact version and Cloudflare Workers test-runtime approach must be verified against current docs before locking — no docs MCP available this session |
+| unit + integration | Vitest | ^4.1.9 | `tests/unit/**` (pure logic, no external services, `npm run test:unit`) and `tests/integration/**` (real local Supabase + two-seeded-user fixtures, `npm run test:integration`) both landed; see §3 Phases 1-2. checked: 2026-08-22 |
 | API/route integration | none yet — see Phase 1 | — | two-seeded-user harness against local Supabase (`supabase start`), per §2 Risk Response Guidance #1–#4 |
 | e2e | not planned | — | no rollout phase adds this; app is deterministic CRUD, integration layer covers the risk map |
 | accessibility | not planned | — | no rollout phase adds this; out of scope for this rollout's risk map |
@@ -120,7 +120,7 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.3 Adding a test for the weekly report computation
 
-- TBD — see §3 Phase 2 (will cover the fixture-seeded, independently-computed-expected-value pattern for Risk #5).
+Landed in `tests/unit/date-utils.test.ts` and `tests/unit/weekly-report.test.ts` (2026-08-22, via `context/changes/weekly-progress-report/`, folded into S-06's own implementation rather than opened as a separate change). Pattern: the report computation lives as pure functions (`src/lib/date-utils.ts`, `src/lib/weekly-report.ts`) with zero I/O — no Supabase calls, no fixture-user harness needed. Each test builds a literal fixture (an array of row objects) and asserts against an expected value computed by hand in the test/plan itself, never by reading the implementation's own formula (the anti-pattern this risk explicitly warns against). Run with `npm run test:unit` — no local Supabase instance required, unlike the integration suite.
 
 ### 6.4 Adding a date/timezone boundary test
 

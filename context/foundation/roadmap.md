@@ -35,7 +35,7 @@ Gym-goers currently track lifting, body measurements, and calories in separate s
 | S-03 | set-body-composition-goal           | set and edit a body-composition goal at any time                   | —                        | FR-004                 | done     |
 | S-04 | log-daily-calories                  | log calories consumed for a given day                              | —                        | FR-006                 | done     |
 | S-05 | log-weekly-measurements             | log body measurements on a weekly cadence                          | —                        | FR-007                 | done     |
-| S-06 | weekly-progress-report              | view a weekly report: training volume, measurement deltas, calories vs. goal | S-02, S-03, S-04, S-05  | FR-008                 | ready    |
+| S-06 | weekly-progress-report              | view a weekly report: training volume, measurement deltas, calories vs. goal | S-02, S-03, S-04, S-05  | FR-008                 | done     |
 
 ## Streams
 
@@ -147,7 +147,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Deliberately sequenced last — it depends on real data existing across four independent logging slices; shipping it earlier would only show empty states and prove nothing. Code prerequisites (S-02/S-03/S-04/S-05) are now all shipped; the report computation itself will be built and tested against fixture data rather than waiting on real usage history.
-- **Status:** ready
+- **Status:** done (Phase 2 browser manual verification still pending — see `context/changes/weekly-progress-report/plan.md` items 2.4-2.8)
 
 ## Backlog Handoff
 
@@ -159,7 +159,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03       | set-body-composition-goal          | [#11](https://github.com/Julka768/10xdevs/issues/11) | done                   | Implemented; issue closed                  |
 | S-04       | log-daily-calories                 | [#12](https://github.com/Julka768/10xdevs/issues/12) | done                   | Implemented; issue closed                  |
 | S-05       | log-weekly-measurements            | [#13](https://github.com/Julka768/10xdevs/issues/13) | done                   | Implemented; issue closed                  |
-| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | yes                    | Run `/10x-plan weekly-progress-report`; report logic built/tested against fixture data |
+| S-06       | weekly-progress-report             | [#14](https://github.com/Julka768/10xdevs/issues/14) | done                   | Implemented; issue closed. Phase 2 browser manual verification still pending. |
 
 Migrated to GitHub Issues on `Julka768/10xdevs`, milestone [`MVP roadmap`](https://github.com/Julka768/10xdevs/milestone/1), on 2026-07-02.
 
@@ -187,4 +187,5 @@ None — PRD's `## Open Questions` is empty, and no new cross-cutting question s
 - **S-03: User sets and edits a body-composition goal** — Implemented 2026-07-04 in `context/changes/set-body-composition-goal/` (3 phases: data foundation, API route, UI; impl-reviewed, not yet archived). Append-only history table with GRANT-enforced no-update/delete; "current goal" is always the latest row per user.
 - **S-04: User logs daily calories** — Implemented 2026-08-21 in `context/changes/log-daily-calories/` (3 phases: data foundation, API routes, UI; impl-reviewed APPROVED, PR merged to master, not yet archived). `logged_at <= current_date` CHECK ships in the initial migration by design, closing the workout_logs PostgREST-bypass gap from day one.
 - **S-05: User logs weekly body measurements** — Implemented 2026-08-21 in `context/changes/log-weekly-measurements/` (6 phases: fixed `body_measurements` fields p1-p3, then an additive user-defined custom measurement types extension p4-p6 added mid-implementation after manual testing surfaced a real scope gap; impl-reviewed APPROVED, PR #22 merged to master, not yet archived). `measurement_values` RLS insert policy validates FK ownership via `exists` subqueries, mirroring `workout_logs`.
+- **S-06: User views a weekly progress report** — Implemented 2026-08-22 in `context/changes/weekly-progress-report/` (2 phases: pure computation logic + unit tests, then UI; PR #23 merged to master, not yet archived). No new table — pure read/compute over the four existing domain tables. First unit tests in this project (`tests/unit/`), fulfilling `test-plan.md` §3 Phase 2 / Risk #5 with independently hand-computed fixtures. **Phase 2's browser manual-verification checklist (items 2.4-2.8) is still pending** — flagged for follow-up.
 
