@@ -111,7 +111,7 @@ export interface Database {
           name: string;
           plan_id: string;
           position: number;
-          target_reps: number;
+          target_reps: string;
           target_sets: number;
           user_id: string;
         };
@@ -121,7 +121,7 @@ export interface Database {
           name: string;
           plan_id: string;
           position: number;
-          target_reps: number;
+          target_reps: string;
           target_sets: number;
           user_id: string;
         };
@@ -131,7 +131,7 @@ export interface Database {
           name?: string;
           plan_id?: string;
           position?: number;
-          target_reps?: number;
+          target_reps?: string;
           target_sets?: number;
           user_id?: string;
         };

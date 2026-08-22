@@ -13,6 +13,12 @@ const supabase = createClient(Astro.request.headers, Astro.cookies);
 const { data: plans } = supabase
   ? await supabase.from("training_plans").select("id, name").order("created_at", { ascending: false })
   : { data: null };
+
+const { data: exerciseRows } = supabase ? await supabase.from("exercises").select("plan_id") : { data: null };
+const exerciseCountByPlan = new Map<string, number>();
+for (const row of exerciseRows ?? []) {
+  exerciseCountByPlan.set(row.plan_id, (exerciseCountByPlan.get(row.plan_id) ?? 0) + 1);
+}
 ---
 
 <Layout title="Training plans">
@@ -28,31 +34,52 @@ const { data: plans } = supabase
       <ServerError message={error} />
 
       <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-        <form method="POST" action="/api/plans" class="flex items-end gap-3">
+        <form method="POST" action="/api/plans" class="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div class="flex-1 space-y-1.5">
             <Label htmlFor="name">Plan name</Label>
             <Input id="name" name="name" placeholder="e.g. Push Pull Legs" required />
           </div>
-          <Button type="submit">Create</Button>
+          <Button type="submit" className="sm:w-auto"> Create </Button>
         </form>
       </div>
 
       {
         plans && plans.length > 0 ? (
-          <div class="space-y-3">
-            {plans.map((plan) => (
-              <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl">
-                <a href={`/dashboard/plans/${plan.id}`} class="font-medium hover:underline">
-                  {plan.name}
-                </a>
-                <DeleteConfirmButton client:load action={`/api/plans/${plan.id}/delete`} itemLabel={plan.name} />
-              </div>
-            ))}
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {plans.map((plan) => {
+              const count = exerciseCountByPlan.get(plan.id) ?? 0;
+              return (
+                <div class="relative rounded-2xl border border-white/10 bg-white/10 p-6 pr-14 backdrop-blur-xl">
+                  <span class="text-2xl">🏋️</span>
+                  <p class="mt-3 truncate font-semibold">{plan.name}</p>
+                  <p class="mt-1 text-sm text-blue-100/70">
+                    {count} exercise{count === 1 ? "" : "s"}
+                  </p>
+                  <div class="mt-4 flex items-center gap-2">
+                    <a
+                      href={`/dashboard/plans/${plan.id}`}
+                      class="flex-1 rounded-lg border border-white/20 px-3 py-1.5 text-center text-sm font-medium text-blue-100/80 hover:bg-white/10 hover:text-white"
+                    >
+                      Edit
+                    </a>
+                    <a
+                      href={`/dashboard/plans/${plan.id}/log`}
+                      class="flex-1 rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-1.5 text-center text-sm font-medium text-emerald-200 hover:bg-emerald-500/20"
+                    >
+                      Log
+                    </a>
+                  </div>
+                  <div class="absolute top-4 right-4">
+                    <DeleteConfirmButton client:load action={`/api/plans/${plan.id}/delete`} itemLabel={plan.name} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <p class="text-center text-blue-100/70">
+          <div class="rounded-2xl border border-dashed border-white/20 p-10 text-center text-blue-100/70">
             You don't have any training plans yet. Create your first one above.
-          </p>
+          </div>
         )
       }
     </div>
