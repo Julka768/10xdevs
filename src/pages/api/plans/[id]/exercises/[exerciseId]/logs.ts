@@ -20,12 +20,12 @@ export const POST: APIRoute = async (context) => {
     logged_at: form.get("logged_at"),
   });
   if (!parsed.success) {
-    return context.redirect(`/dashboard/plans/${id}?error=${encodeURIComponent("Enter valid workout details")}`);
+    return context.redirect(`/dashboard/plans/${id}/log?error=${encodeURIComponent("Enter valid workout details")}`);
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/dashboard/plans/${id}?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/dashboard/plans/${id}/log?error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
   const { data: exercise } = await supabase
@@ -36,7 +36,7 @@ export const POST: APIRoute = async (context) => {
     .maybeSingle();
 
   if (!exercise) {
-    return context.redirect(`/dashboard/plans/${id}?error=${encodeURIComponent("Exercise not found")}`);
+    return context.redirect(`/dashboard/plans/${id}/log?error=${encodeURIComponent("Exercise not found")}`);
   }
 
   const { error } = await supabase.from("workout_logs").insert({
@@ -48,8 +48,8 @@ export const POST: APIRoute = async (context) => {
   });
 
   if (error) {
-    return context.redirect(`/dashboard/plans/${id}?error=${encodeURIComponent("Could not log workout")}`);
+    return context.redirect(`/dashboard/plans/${id}/log?error=${encodeURIComponent("Could not log workout")}`);
   }
 
-  return context.redirect(`/dashboard/plans/${id}`);
+  return context.redirect(`/dashboard/plans/${id}/log`);
 };

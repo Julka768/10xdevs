@@ -1,0 +1,311 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ServerError } from "@/components/auth/ServerError";
+import { DeleteConfirmButton } from "@/components/plans/DeleteConfirmButton";
+
+const { id } = Astro.params;
+if (typeof id !== "string") {
+  return Astro.redirect("/dashboard/plans");
+}
+const error = Astro.url.searchParams.get("error");
+const loggingExerciseId = Astro.url.searchParams.get("log");
+const editingLogId = Astro.url.searchParams.get("editLog");
+const today = new Date().toISOString().slice(0, 10);
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { data: plan } = supabase
+  ? await supabase.from("training_plans").select("id, name").eq("id", id).maybeSingle()
+  : { data: null };
+
+if (!plan) {
+  return Astro.redirect("/dashboard/plans");
+}
+
+const { data: exercises } = supabase
+  ? await supabase
+      .from("exercises")
+      .select("id, name, target_sets, target_reps, position")
+      .eq("plan_id", id)
+      .order("position", { ascending: true })
+  : { data: null };
+
+const { data: logs } = supabase
+  ? await supabase
+      .from("workout_logs")
+      .select("id, exercise_id, exercise_name, weight, reps, sets_completed, logged_at")
+      .eq("plan_id", id)
+      .order("logged_at", { ascending: false })
+      .order("created_at", { ascending: false })
+  : { data: null };
+
+const logsByDate = new Map<string, NonNullable<typeof logs>>();
+for (const log of logs ?? []) {
+  const entries = logsByDate.get(log.logged_at) ?? [];
+  entries.push(log);
+  logsByDate.set(log.logged_at, entries);
+}
+
+function formatDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+---
+
+<Layout title={`Log — ${plan.name}`}>
+  <div class="bg-cosmic min-h-screen p-4 text-white">
+    <div class="mx-auto max-w-2xl space-y-6 py-8">
+      <div class="flex items-center justify-between gap-4">
+        <a href="/dashboard/plans" class="text-sm text-blue-100/70 hover:underline">← All plans</a>
+        <a href={`/dashboard/plans/${plan.id}`} class="text-sm text-blue-100/70 hover:underline">Edit plan →</a>
+      </div>
+
+      <ServerError message={error} />
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold">
+          {plan.name}
+          <span class="text-sm font-normal text-blue-100/60">— log a workout</span>
+        </h2>
+
+        {
+          exercises && exercises.length > 0 ? (
+            <div class="space-y-3">
+              {exercises.map((exercise) =>
+                exercise.id === loggingExerciseId ? (
+                  <form
+                    method="POST"
+                    action={`/api/plans/${plan.id}/exercises/${exercise.id}/logs`}
+                    class="rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4"
+                  >
+                    <p class="mb-3 text-xs font-semibold tracking-wide text-emerald-200 uppercase">
+                      Logging {exercise.name}
+                    </p>
+                    <div class="flex flex-wrap items-end gap-3">
+                      <div class="w-28 space-y-1.5">
+                        <Label htmlFor={`log-reps-${exercise.id}`}>Reps</Label>
+                        <Input
+                          id={`log-reps-${exercise.id}`}
+                          name="reps"
+                          type="number"
+                          min="1"
+                          className="font-semibold"
+                          required
+                        />
+                      </div>
+                      <div class="w-28 space-y-1.5">
+                        <Label htmlFor={`log-weight-${exercise.id}`}>Weight</Label>
+                        <Input
+                          id={`log-weight-${exercise.id}`}
+                          name="weight"
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          placeholder="kg"
+                          className="font-semibold"
+                          required
+                        />
+                      </div>
+                      <Button type="submit">Log</Button>
+                      <a href={`/dashboard/plans/${plan.id}/log`} class="text-sm text-blue-100/70 hover:underline">
+                        Cancel
+                      </a>
+                    </div>
+                    <div class="mt-3 flex flex-wrap items-end gap-3 border-t border-white/10 pt-3">
+                      <div class="w-20 space-y-1.5">
+                        <Label htmlFor={`log-sets-${exercise.id}`} className="text-xs text-blue-100/60">
+                          Sets
+                        </Label>
+                        <Input
+                          id={`log-sets-${exercise.id}`}
+                          name="sets_completed"
+                          type="number"
+                          min="1"
+                          defaultValue={exercise.target_sets}
+                          required
+                        />
+                      </div>
+                      <div class="w-36 space-y-1.5">
+                        <Label htmlFor={`log-date-${exercise.id}`} className="text-xs text-blue-100/60">
+                          Date
+                        </Label>
+                        <Input
+                          id={`log-date-${exercise.id}`}
+                          name="logged_at"
+                          type="date"
+                          defaultValue={today}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </form>
+                ) : (
+                  <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
+                    <div class="min-w-0">
+                      <p class="truncate font-medium">{exercise.name}</p>
+                      <div class="mt-1.5 flex items-center gap-2">
+                        <span class="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-100">
+                          {exercise.target_sets} sets
+                        </span>
+                        <span class="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs font-medium text-purple-100">
+                          {exercise.target_reps} reps
+                        </span>
+                      </div>
+                    </div>
+                    <a
+                      href={`/dashboard/plans/${plan.id}/log?log=${exercise.id}`}
+                      class="shrink-0 rounded-lg border border-emerald-400/40 px-3 py-1.5 text-sm font-medium text-emerald-200 hover:bg-emerald-500/10"
+                    >
+                      Log
+                    </a>
+                  </div>
+                ),
+              )}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">
+              This plan has no exercises yet.{" "}
+              <a href={`/dashboard/plans/${plan.id}`} class="underline hover:text-white">
+                Add some first
+              </a>
+              .
+            </p>
+          )
+        }
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold">
+          Workout Log
+          {
+            logsByDate.size > 0 && (
+              <span class="rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-blue-100/70">
+                {logs?.length}
+              </span>
+            )
+          }
+        </h2>
+
+        {
+          logsByDate.size > 0 ? (
+            <div class="space-y-4">
+              {[...logsByDate.entries()].map(([date, entries], index) => (
+                <details
+                  class="group overflow-hidden rounded-xl border border-white/10 bg-white/5"
+                  open={index === 0 || entries.some((log) => log.id === editingLogId)}
+                >
+                  <summary class="flex cursor-pointer list-none items-center justify-between border-b border-white/10 bg-white/5 px-4 py-2 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
+                    <h3 class="text-sm font-semibold text-blue-100/80">{formatDate(date)}</h3>
+                    <span class="text-xs text-blue-100/50 transition-transform group-open:rotate-180">▾</span>
+                  </summary>
+                  <div class="divide-y divide-white/10">
+                    {entries.map((log) =>
+                      log.id === editingLogId ? (
+                        <form
+                          method="POST"
+                          action={`/api/plans/${plan.id}/logs/${log.id}/update`}
+                          class="border-l-2 border-blue-400/60 bg-blue-500/10 p-4"
+                        >
+                          <p class="mb-3 text-xs font-semibold tracking-wide text-blue-200 uppercase">
+                            Editing {log.exercise_name}
+                          </p>
+                          <div class="flex flex-wrap items-end gap-3">
+                            <div class="w-24 space-y-1.5">
+                              <Label htmlFor={`edit-weight-${log.id}`}>Weight</Label>
+                              <Input
+                                id={`edit-weight-${log.id}`}
+                                name="weight"
+                                type="number"
+                                step="0.5"
+                                min="0"
+                                defaultValue={log.weight}
+                                required
+                              />
+                            </div>
+                            <div class="w-24 space-y-1.5">
+                              <Label htmlFor={`edit-reps-${log.id}`}>Reps</Label>
+                              <Input
+                                id={`edit-reps-${log.id}`}
+                                name="reps"
+                                type="number"
+                                min="1"
+                                defaultValue={log.reps}
+                                required
+                              />
+                            </div>
+                            <div class="w-24 space-y-1.5">
+                              <Label htmlFor={`edit-sets-${log.id}`}>Sets</Label>
+                              <Input
+                                id={`edit-sets-${log.id}`}
+                                name="sets_completed"
+                                type="number"
+                                min="1"
+                                defaultValue={log.sets_completed}
+                                required
+                              />
+                            </div>
+                            <div class="w-40 space-y-1.5">
+                              <Label htmlFor={`edit-date-${log.id}`}>Date</Label>
+                              <Input
+                                id={`edit-date-${log.id}`}
+                                name="logged_at"
+                                type="date"
+                                defaultValue={log.logged_at}
+                                required
+                              />
+                            </div>
+                            <Button type="submit" variant="secondary">
+                              Save
+                            </Button>
+                            <a
+                              href={`/dashboard/plans/${plan.id}/log`}
+                              class="text-sm text-blue-100/70 hover:underline"
+                            >
+                              Cancel
+                            </a>
+                          </div>
+                        </form>
+                      ) : (
+                        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-white/5">
+                          <div class="min-w-0">
+                            <p class="truncate font-medium">{log.exercise_name}</p>
+                            <p class="text-sm text-blue-100/70">
+                              {log.weight} kg × {log.reps} reps × {log.sets_completed} sets
+                            </p>
+                          </div>
+                          <div class="flex shrink-0 items-center gap-3">
+                            <a
+                              href={`/dashboard/plans/${plan.id}/log?editLog=${log.id}`}
+                              class="text-sm text-blue-100/70 hover:underline"
+                            >
+                              Edit
+                            </a>
+                            <DeleteConfirmButton
+                              client:load
+                              action={`/api/plans/${plan.id}/logs/${log.id}/delete`}
+                              itemLabel={log.exercise_name}
+                            />
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </details>
+              ))}
+            </div>
+          ) : (
+            <p class="text-center text-blue-100/70">No workout history yet. Log an entry above to get started.</p>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</Layout>
