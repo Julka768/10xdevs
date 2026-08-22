@@ -1,8 +1,4 @@
 ---
-import Welcome from "@/components/Welcome.astro";
-import Layout from "@/layouts/Layout.astro";
+const { user } = Astro.locals;
+return Astro.redirect(user ? "/dashboard" : "/auth/signin");
 ---
-
-<Layout>
-  <Welcome />
-</Layout>
