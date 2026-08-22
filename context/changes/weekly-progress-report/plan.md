@@ -269,9 +269,9 @@ None — no schema changes.
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 Unit tests pass: `npm run test:unit` (extended in this phase with `aggregateTrend` coverage for the dashboard badges)
+- [x] 2.1 Build passes: `npm run build` — 58cb27a
+- [x] 2.2 Lint passes: `npm run lint` — 58cb27a
+- [x] 2.3 Unit tests pass: `npm run test:unit` (extended in this phase with `aggregateTrend` coverage for the dashboard badges) — 58cb27a
 
 #### Manual
 

@@ -1,9 +1,9 @@
 ---
 change_id: weekly-progress-report
 title: View a weekly progress report
-status: implementing
+status: implemented
 created: 2026-08-21
-updated: 2026-08-21
+updated: 2026-08-22
 archived_at: null
 ---
 
