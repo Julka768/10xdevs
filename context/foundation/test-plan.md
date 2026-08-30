@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-08-30 (Phase 3 complete)
+> Last updated: 2026-08-30 (Phase 4 complete — rollout finished)
 
 ## 1. Strategy
 
@@ -68,7 +68,7 @@ orchestrator updates Status as artifacts appear on disk.
 | 1 | Critical-path integrity & authorization | Bootstrap the integration test runner + a two-seeded-user Supabase fixture harness, then prove ownership/attribution/cascade/authorization correctness across every existing and upcoming domain table | #1, #2, #3, #4 | integration | complete | `context/changes/testing-critical-path-integrity/` |
 | 2 | Weekly report correctness | Prove FR-008's volume-trend/measurement-delta/calorie-vs-goal computation against independently hand-computed fixture data, once S-06 is built | #5 | unit | complete | `context/changes/weekly-progress-report/` (folded into S-06's own plan rather than its own change folder — see note below) |
 | 3 | Date/timezone boundary hardening | Unit-test the date/week-boundary logic shared across logging and reporting, parametrized across timezones | #6 | unit | complete | `context/changes/testing-date-timezone-boundary-hardening/` |
-| 4 | Quality-gates wiring | Require the new integration/unit suites in CI alongside the existing lint+build gate | cross-cutting | gates | not started | — |
+| 4 | Quality-gates wiring | Require the new integration/unit suites in CI alongside the existing lint+build gate | cross-cutting | gates | complete | `context/changes/testing-quality-gates-wiring/` |
 
 **Status vocabulary** (fixed — parser literals): `not started` → `change opened` → `researched` → `planned` → `implementing` → `complete`.
 
