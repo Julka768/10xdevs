@@ -155,12 +155,12 @@ None — no schema or data changes; this phase only touches `.github/workflows/c
 
 #### Automated
 
-- [x] 1.1 `ci` job runs `npm run test:unit` and it passes (23/23)
-- [x] 1.2 Existing `lint`/`build` steps still pass unchanged
+- [x] 1.1 `ci` job runs `npm run test:unit` and it passes (23/23) — 57c6cfa
+- [x] 1.2 Existing `lint`/`build` steps still pass unchanged — 57c6cfa
 
 #### Manual
 
-- [ ] 1.3 New step visible and green in Actions log for a test push/PR
+- [x] 1.3 New step visible and green in Actions log for a test push/PR — verified in PR #30, run 33310069669
 
 ### Phase 2: Integration-tests job + deploy gate
 
@@ -168,7 +168,7 @@ None — no schema or data changes; this phase only touches `.github/workflows/c
 
 - [ ] 2.1 `integration-tests` job's `supabase start` reaches healthy, `npm run test:integration` passes (15/15) in an actual GitHub Actions run
 - [ ] 2.2 Synthesized `.env`/`.env.test` contain expected variable names/values
-- [ ] 2.3 `deploy` job's YAML shows `needs: [ci, integration-tests]`
+- [x] 2.3 `deploy` job's YAML shows `needs: [ci, integration-tests]`
 - [ ] 2.4 A push to `master` triggers `deploy` only after both `ci` and `integration-tests` succeed
 
 #### Manual

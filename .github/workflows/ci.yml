@@ -24,8 +24,32 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v3
+      - run: supabase start -x analytics -x edge-runtime -x imgproxy -x studio -x vector
+      - name: Export local Supabase env vars
+        run: |
+          supabase status -o env \
+            --override-name api.url=SUPABASE_URL \
+            --override-name auth.anon_key=SUPABASE_ANON_KEY \
+            --override-name auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY \
+            > .env.test
+          {
+            echo "SUPABASE_URL=$(grep '^SUPABASE_URL=' .env.test | cut -d'=' -f2- | tr -d '\"')"
+            echo "SUPABASE_KEY=$(grep '^SUPABASE_ANON_KEY=' .env.test | cut -d'=' -f2- | tr -d '\"')"
+          } > .env
+      - run: npm run test:integration
+
   deploy:
-    needs: ci
+    needs: [ci, integration-tests]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
