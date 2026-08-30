@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getWeekBounds } from "@/lib/date-utils";
+import { getWeekBounds, isNotFutureDate } from "@/lib/date-utils";
 
 describe("getWeekBounds", () => {
   it("returns the Monday-Sunday week containing a mid-week reference date", () => {
@@ -24,5 +24,31 @@ describe("getWeekBounds", () => {
     const bounds = getWeekBounds(new Date("2026-08-23T23:59:59Z"));
     expect(bounds.currentWeekStart).toBe("2026-08-17");
     expect(bounds.currentWeekEnd).toBe("2026-08-23");
+  });
+});
+
+describe("isNotFutureDate", () => {
+  // Checked at both just-after-UTC-midnight and just-before-UTC-midnight to
+  // prove the one-day grace window depends only on the UTC calendar date of
+  // `now`, not on what time of day it happens to be.
+  const nowInstants = [
+    ["just after UTC midnight", new Date("2026-08-30T00:00:01Z")],
+    ["just before UTC midnight", new Date("2026-08-30T23:59:59Z")],
+  ] as const;
+
+  it.each(nowInstants)("%s: accepts today's UTC date", (_label, now) => {
+    expect(isNotFutureDate("2026-08-30", now)).toBe(true);
+  });
+
+  it.each(nowInstants)("%s: accepts tomorrow (the one-day grace window)", (_label, now) => {
+    expect(isNotFutureDate("2026-08-31", now)).toBe(true);
+  });
+
+  it.each(nowInstants)("%s: rejects the day after tomorrow", (_label, now) => {
+    expect(isNotFutureDate("2026-09-01", now)).toBe(false);
+  });
+
+  it.each(nowInstants)("%s: accepts a date in the past", (_label, now) => {
+    expect(isNotFutureDate("2026-08-29", now)).toBe(true);
   });
 });

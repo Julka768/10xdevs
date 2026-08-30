@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isNotFutureDate } from "@/lib/date-utils";
 
 export const optionalMeasurement = z.preprocess(
   (val) => (val === "" || val === null || val === undefined ? null : val),
@@ -14,7 +15,7 @@ export const measurementLogInputSchema = z.object({
   thighs: optionalMeasurement,
   logged_at: z
     .string()
-    .refine((value) => value <= new Date().toISOString().slice(0, 10), { message: "Date cannot be in the future" }),
+    .refine((value) => isNotFutureDate(value, new Date()), { message: "Date cannot be in the future" }),
 });
 
 export const measurementTypeInputSchema = z.object({

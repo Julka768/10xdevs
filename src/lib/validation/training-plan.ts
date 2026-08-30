@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isNotFutureDate } from "@/lib/date-utils";
 
 export const planNameSchema = z.string().trim().min(1).max(120);
 
@@ -14,5 +15,5 @@ export const workoutLogInputSchema = z.object({
   sets_completed: z.coerce.number().int().positive(),
   logged_at: z
     .string()
-    .refine((value) => value <= new Date().toISOString().slice(0, 10), { message: "Date cannot be in the future" }),
+    .refine((value) => isNotFutureDate(value, new Date()), { message: "Date cannot be in the future" }),
 });

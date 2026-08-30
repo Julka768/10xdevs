@@ -37,3 +37,17 @@ export function getWeekBounds(referenceDate: Date): WeekBounds {
     priorWeekEnd: toDateString(priorEnd),
   };
 }
+
+/**
+ * True when `value` (a YYYY-MM-DD date string) is not more than one UTC
+ * calendar day ahead of `now`. The one-day grace window exists because the
+ * server never learns the submitter's real timezone (plain `<input
+ * type="date">` forms send no offset), so a strict `value <= today` check
+ * wrongly rejects a same-local-day entry for anyone in a timezone ahead of
+ * UTC, right after their local midnight but before UTC's.
+ */
+export function isNotFutureDate(value: string, now: Date): boolean {
+  const latestAllowed = new Date(now);
+  latestAllowed.setUTCDate(latestAllowed.getUTCDate() + 1);
+  return value <= toDateString(latestAllowed);
+}
