@@ -169,7 +169,7 @@ None — no schema or data changes; this phase only touches `.github/workflows/c
 - [x] 2.1 `integration-tests` job's `supabase start` reaches healthy, `npm run test:integration` passes (15/15) in an actual GitHub Actions run — verified in PR #30, run 33310288313 (3m10s total, 15/15 passed) — 3d3e6b0
 - [x] 2.2 Synthesized `.env`/`.env.test` contain expected variable names/values — verified in run 33310288313 log (SUPABASE_URL/SUPABASE_ANON_KEY/SUPABASE_SERVICE_ROLE_KEY populated correctly) — 3d3e6b0
 - [x] 2.3 `deploy` job's YAML shows `needs: [ci, integration-tests]` — 2592eaf
-- [ ] 2.4 A push to `master` triggers `deploy` only after both `ci` and `integration-tests` succeed
+- [x] 2.4 A push to `master` triggers `deploy` only after both `ci` and `integration-tests` succeed — verified on merge, run 33310716831: ci (1m27s) and integration-tests (3m2s) both completed before deploy (1m6s) started
 
 #### Manual
 

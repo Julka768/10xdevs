@@ -1,7 +1,7 @@
 ---
 change_id: testing-quality-gates-wiring
 title: Quality-gates wiring — require test suites in CI (test-plan rollout Phase 4)
-status: implementing
+status: implemented
 created: 2026-08-30
 updated: 2026-08-30
 archived_at: null
