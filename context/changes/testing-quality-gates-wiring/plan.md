@@ -166,12 +166,12 @@ None — no schema or data changes; this phase only touches `.github/workflows/c
 
 #### Automated
 
-- [ ] 2.1 `integration-tests` job's `supabase start` reaches healthy, `npm run test:integration` passes (15/15) in an actual GitHub Actions run
-- [ ] 2.2 Synthesized `.env`/`.env.test` contain expected variable names/values
-- [x] 2.3 `deploy` job's YAML shows `needs: [ci, integration-tests]`
+- [x] 2.1 `integration-tests` job's `supabase start` reaches healthy, `npm run test:integration` passes (15/15) in an actual GitHub Actions run — verified in PR #30, run 33310288313 (3m10s total, 15/15 passed)
+- [x] 2.2 Synthesized `.env`/`.env.test` contain expected variable names/values — verified in run 33310288313 log (SUPABASE_URL/SUPABASE_ANON_KEY/SUPABASE_SERVICE_ROLE_KEY populated correctly)
+- [x] 2.3 `deploy` job's YAML shows `needs: [ci, integration-tests]` — 2592eaf
 - [ ] 2.4 A push to `master` triggers `deploy` only after both `ci` and `integration-tests` succeed
 
 #### Manual
 
-- [ ] 2.5 `integration-tests` appears as a separate parallel job and goes green in the Actions tab
-- [ ] 2.6 Added wall-clock is in the expected ~2-4 min range
+- [x] 2.5 `integration-tests` appears as a separate parallel job and goes green in the Actions tab — user-confirmed, PR #30 run 33310288313
+- [x] 2.6 Added wall-clock is in the expected ~2-4 min range — 3m10s, user-confirmed
