@@ -30,7 +30,10 @@ export const POST: APIRoute = async (context) => {
 
   const { data, error } = await supabase.from("workout_logs").update(parsed.data).eq("id", logId).select();
 
-  if (error || data.length === 0) {
+  if (error) {
+    return context.redirect(`/dashboard/plans/${id}/log?error=${encodeURIComponent("Could not update workout log")}`);
+  }
+  if (data.length === 0) {
     return context.redirect(`/dashboard/plans/${id}/log?error=${encodeURIComponent("Log entry not found")}`);
   }
 

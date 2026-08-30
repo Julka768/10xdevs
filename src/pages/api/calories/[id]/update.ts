@@ -28,7 +28,10 @@ export const POST: APIRoute = async (context) => {
 
   const { data, error } = await supabase.from("calorie_logs").update(parsed.data).eq("id", id).select();
 
-  if (error || data.length === 0) {
+  if (error) {
+    return context.redirect(`/dashboard/calories?error=${encodeURIComponent("Could not update calorie entry")}`);
+  }
+  if (data.length === 0) {
     return context.redirect(`/dashboard/calories?error=${encodeURIComponent("Log entry not found")}`);
   }
 
