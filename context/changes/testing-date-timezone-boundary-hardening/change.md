@@ -1,7 +1,7 @@
 ---
 change_id: testing-date-timezone-boundary-hardening
 title: Date/timezone boundary hardening tests (test-plan rollout Phase 3)
-status: planned
+status: implemented
 created: 2026-08-30
 updated: 2026-08-30
 archived_at: null

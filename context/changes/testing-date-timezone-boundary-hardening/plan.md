@@ -142,11 +142,11 @@ None — no schema or data changes; this is application-layer validation logic o
 
 #### Automated
 
-- [ ] 1.1 Unit tests pass: `npm run test:unit`
-- [ ] 1.2 Lint passes: `npm run lint`
-- [ ] 1.3 Build passes: `npm run build`
+- [x] 1.1 Unit tests pass: `npm run test:unit` — a02cb5c
+- [x] 1.2 Lint passes: `npm run lint` — a02cb5c
+- [x] 1.3 Build passes: `npm run build` — a02cb5c
 
 #### Manual
 
-- [ ] 1.4 Today's date accepted in all three forms (no regression)
-- [ ] 1.5 Date beyond the one-day grace window rejected in all three forms
+- [x] 1.4 Today's date accepted in all three forms (no regression) — a02cb5c
+- [x] 1.5 Date beyond the one-day grace window rejected in all three forms — a02cb5c
