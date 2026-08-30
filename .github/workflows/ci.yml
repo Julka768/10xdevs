@@ -46,6 +46,7 @@ jobs:
             echo "SUPABASE_URL=$(grep '^SUPABASE_URL=' .env.test | cut -d'=' -f2- | tr -d '\"')"
             echo "SUPABASE_KEY=$(grep '^SUPABASE_ANON_KEY=' .env.test | cut -d'=' -f2- | tr -d '\"')"
           } > .env
+          grep -q '^SUPABASE_URL=.\+' .env && grep -q '^SUPABASE_KEY=.\+' .env || { echo "::error::Failed to extract Supabase env vars from 'supabase status -o env'"; exit 1; }
       - run: npm run test:integration
 
   deploy:
